@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Expense Tracker</string>
+
+    <!-- Bottom Nav String Resource -->
+    <string name="home">Home</string>
+    <string name="credit_card">Card Information</string>
+    <string name="calendar">Calendar</string>
+    <string name="add">Add</string>
+    <string name="settings">Settings</string>
+
+</resources>
