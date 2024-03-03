@@ -1,6 +1,7 @@
 package com.eyeshield.expensetracker
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ripple.LocalRippleTheme
@@ -17,6 +18,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,7 +79,7 @@ fun BottomNavigation() {
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = Color.White,
+                            indicatorColor = colorResource(id = R.color.shadow_white),
                             selectedIconColor = Color.Black,
                             unselectedIconColor = Color.Gray
                         ),
@@ -88,9 +90,11 @@ fun BottomNavigation() {
     }) { innerPadding ->
 
         NavHost(
-            navController,
+            modifier = Modifier
+                .background(color = colorResource(id = R.color.shadow_white))
+                .padding(innerPadding),
+            navController = navController,
             startDestination = Screens.AddScreen.route,
-            Modifier.padding(innerPadding)
         ) {
             composable(Screens.HomeScreen.route) {
                 BackHandler {
