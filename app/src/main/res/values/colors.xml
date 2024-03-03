@@ -7,4 +7,34 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="shadow_white">#F6F6F6</color>
+    <color name="graphite_gray">#292d32</color>
+    <color name="greeting">#BFBFBF</color>
+    <color name="username">#121A2E</color>
+    <color name="notification_pressed_state">#333333</color>
+
+    <!-- Income Expense Card Color References -->
+
+    <!--  Common  -->
+    <color name="income_or_expense_text">#434343</color>
+
+    <!-- Expense Card Color References -->
+    <color name="expense_icon">#ff9902</color>
+    <color name="expense_icon_background">#fff0d9</color>
+    <color name="expense_percentage">#ff8501</color>
+
+    <!-- Income Card Color References -->
+    <color name="income_icon">#36e66b</color>
+    <color name="income_icon_background">#e3fcea</color>
+    <color name="income_percentage">#1fe35b</color>
+
+    <color name="linear_progress_background">#393a3a</color>
+
+    <!-- Transactions Color References -->
+    <color name="transaction_heading">#101010</color>
+    <color name="transaction_name">#434343</color>
+    <color name="transaction_amount">#434343</color>
+    <color name="transaction_date">#d3d3d3</color>
+
 </resources>
