@@ -14,6 +14,7 @@
     <color name="username">#121A2E</color>
     <color name="notification_pressed_state">#333333</color>
 
+    <color name="credit_card_number">#FDFDFD</color>
     <!-- Income Expense Card Color References -->
 
     <!--  Common  -->
@@ -29,7 +30,10 @@
     <color name="income_icon_background">#e3fcea</color>
     <color name="income_percentage">#1fe35b</color>
 
+    <!-- Linear Progress Bar References-->
     <color name="linear_progress_background">#393a3a</color>
+    <color name="linear_progress_start">#EB001B</color>
+    <color name="linear_progress_end">#f79e1b</color>
 
     <!-- Transactions Color References -->
     <color name="transaction_heading">#101010</color>

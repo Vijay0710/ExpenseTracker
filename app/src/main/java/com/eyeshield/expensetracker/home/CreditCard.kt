@@ -73,7 +73,7 @@ fun CreditCard(
             },
         colors = CardDefaults.cardColors(
             containerColor = colorResource(
-                id = R.color.grpahite_gray
+                id = R.color.graphite_gray
             )
         ),
         shape = RoundedCornerShape(30.dp),
