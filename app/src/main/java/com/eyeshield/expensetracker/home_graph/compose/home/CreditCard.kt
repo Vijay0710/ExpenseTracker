@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home
+package com.eyeshield.expensetracker.home_graph.compose.home
 
 
 import androidx.compose.animation.core.LinearOutSlowInEasing

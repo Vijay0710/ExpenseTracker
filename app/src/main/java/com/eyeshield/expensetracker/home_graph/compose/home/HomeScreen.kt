@@ -1,6 +1,7 @@
-package com.eyeshield.expensetracker.home
+package com.eyeshield.expensetracker.home_graph.compose.home
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -46,15 +47,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
 import kotlinx.coroutines.delay
 
 @Composable
-@Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)
-fun HomeScreen() {
+fun HomeScreen(mainNavController: NavController) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     var cardFace by remember { mutableStateOf(CardFace.Front) }
+    val showLogOutDialog = remember { mutableStateOf(false) }
+
+    BackHandler {
+        showLogOutDialog.value = !showLogOutDialog.value
+    }
 
     Column(
         modifier = Modifier
@@ -114,10 +122,10 @@ fun HomeScreen() {
                 cardFace = cardFace.next
             },
             front = {
-                CreditCardContent()
+                CreditCardContent(mainNavController)
             },
             back = {
-                Text(text = "Hello World")
+
             }
         )
 
@@ -174,19 +182,41 @@ fun Transactions() {
 
 
 @Composable
-fun CreditCardContent() {
+fun CreditCardContent(mainNavController: NavController) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        Text(
-            text = "₹ 3,00,000.00", style = TextStyle(
-                color = Color.White,
-                fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                fontSize = 24.sp
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = "₹ 3,00,000.00", style = TextStyle(
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                    fontSize = 24.sp
+                )
             )
-        )
+
+            Icon(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        mainNavController.navigate(MainNavRoutes.StatisticsScreen.route)
+                    },
+                painter = painterResource(id = R.drawable.ic_more),
+                contentDescription = "More",
+                tint = if(isPressed.value) Color.Gray.copy(0.7f) else Color.Unspecified
+            )
+        }
+
 
         Text(
             text = "Balance", style = TextStyle(
@@ -266,4 +296,10 @@ fun RowScope.RadialGradientLinearProgressIndicator(
             style = Stroke(width = size.height),
         )
     }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(mainNavController = rememberNavController())
 }

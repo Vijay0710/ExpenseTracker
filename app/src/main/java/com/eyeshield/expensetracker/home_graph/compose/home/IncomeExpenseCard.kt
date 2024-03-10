@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home
+package com.eyeshield.expensetracker.home_graph.compose.home
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,16 +72,18 @@ fun RowScope.IncomeExpenseCard(
             ) {
                 Text(
                     text = resourcePercentage, style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.nunito_extra_bold)),
-                        fontSize = 15.sp
+                        fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W800
                     ),
                     color = resourcePercentageColor
                 )
 
                 Text(
                     text = resourceType, style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.nunito_extra_bold)),
-                        fontSize = 15.sp
+                        fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.W800
                     ),
                     color = colorResource(id = R.color.income_or_expense_text)
                 )

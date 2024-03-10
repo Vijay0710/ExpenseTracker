@@ -37,8 +37,12 @@
 
     <!-- Transactions Color References -->
     <color name="transaction_heading">#101010</color>
-    <color name="transaction_name">#434343</color>
-    <color name="transaction_amount">#434343</color>
-    <color name="transaction_date">#d3d3d3</color>
+    <color name="transaction_name">#232323</color>
+    <color name="transaction_amount">#252525</color>
+    <color name="transaction_date">#c0c0c0</color>
+
+    <!-- Statistics Color References -->
+    <color name="statistics_date">#aeaeae</color>
+    <color name="statistics_segmented_button_bg">#282b30</color>
 
 </resources>

@@ -21,24 +21,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.eyeshield.expensetracker.NavigationExtensions.popUpToHomeScreen
 import com.eyeshield.expensetracker.add.AddScreen
 import com.eyeshield.expensetracker.bottomnav.Screens
 import com.eyeshield.expensetracker.calendar.CalendarScreen
 import com.eyeshield.expensetracker.cards.CardScreen
-import com.eyeshield.expensetracker.home.HomeScreen
+import com.eyeshield.expensetracker.home_graph.compose.home.HomeScreen
 import com.eyeshield.expensetracker.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun BottomNavigation() {
+fun BottomNavigation(mainNavController : NavController) {
 
     val navController = rememberNavController()
 
@@ -61,9 +60,7 @@ fun BottomNavigation() {
                 bottomNavItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         modifier = Modifier,
-                        selected = currentDestination?.hierarchy?.any {
-                            it.route == item.route
-                        } == true,
+                        selected = currentDestination?.route == item.route,
                         onClick = {
                             navController.navigate(item.route) {
                                 popUpTo(item.route) {
@@ -94,50 +91,25 @@ fun BottomNavigation() {
                 .background(color = colorResource(id = R.color.shadow_white))
                 .padding(innerPadding),
             navController = navController,
-            startDestination = Screens.AddScreen.route,
+            startDestination = Screens.HomeScreen.route,
         ) {
             composable(Screens.HomeScreen.route) {
-                BackHandler {
-                    navController.navigate(Screens.AddScreen.route) {
-                        popUpTo(Screens.AddScreen.route) {
-                            inclusive = true
-                        }
-                    }
-                }
-                HomeScreen()
+                HomeScreen(mainNavController)
             }
             composable(Screens.CalendarScreen.route) {
-                BackHandler {
-                    navController.navigate(Screens.AddScreen.route) {
-                        popUpTo(Screens.AddScreen.route) {
-                            inclusive = true
-                        }
-                    }
-                }
-
+                BackHandler { navController.popUpToHomeScreen() }
                 CalendarScreen()
             }
             composable(Screens.AddScreen.route) {
+                BackHandler { navController.popUpToHomeScreen() }
                 AddScreen()
             }
             composable(Screens.CardScreen.route) {
-                BackHandler {
-                    navController.navigate(Screens.AddScreen.route) {
-                        popUpTo(Screens.AddScreen.route) {
-                            inclusive = true
-                        }
-                    }
-                }
+                BackHandler { navController.popUpToHomeScreen() }
                 CardScreen()
             }
             composable(Screens.SettingsScreen.route) {
-                BackHandler {
-                    navController.navigate(Screens.AddScreen.route) {
-                        popUpTo(Screens.AddScreen.route) {
-                            inclusive = true
-                        }
-                    }
-                }
+                BackHandler { navController.popUpToHomeScreen() }
                 SettingsScreen()
             }
         }
