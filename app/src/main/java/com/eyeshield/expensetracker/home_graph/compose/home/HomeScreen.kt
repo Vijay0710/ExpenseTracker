@@ -41,9 +41,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -137,12 +140,36 @@ fun HomeScreen(mainNavController: NavController) {
 fun Transactions() {
 
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        Text(
-            "Transactions", style = TextStyle(
-                fontSize = 20.sp, color = colorResource(id = R.color.transaction_heading),
-                fontFamily = FontFamily(Font(R.font.nunito_bold))
+
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            val interactionSource = remember {
+                MutableInteractionSource()
+            }
+
+            val isPressed = interactionSource.collectIsPressedAsState()
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = "Transactions", style = TextStyle(
+                    fontSize = 20.sp, color = colorResource(id = R.color.transaction_heading),
+                    fontFamily = FontFamily(Font(R.font.nunito_bold))
+                )
             )
-        )
+
+            Icon(
+                modifier = Modifier
+                    .size(30.dp)
+                    .align(Alignment.CenterVertically)
+                    .clickable(
+                        interactionSource = interactionSource, indication = null
+                    ) {},
+                painter = painterResource(id = R.drawable.ic_transaction_details),
+                contentDescription = "Notification",
+                tint = if (isPressed.value) Color.Gray.copy(0.6f) else colorResource(id = R.color.notification_pressed_state)
+            )
+
+        }
+
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -213,7 +240,7 @@ fun CreditCardContent(mainNavController: NavController) {
                     },
                 painter = painterResource(id = R.drawable.ic_more),
                 contentDescription = "More",
-                tint = if(isPressed.value) Color.Gray.copy(0.7f) else Color.Unspecified
+                tint = if (isPressed.value) Color.Gray.copy(0.7f) else Color.Unspecified
             )
         }
 
@@ -242,7 +269,17 @@ fun CreditCardContent(mainNavController: NavController) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = "∗∗∗∗  ∗∗∗∗  ∗∗∗∗  3214", style = TextStyle(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 12.sp
+                        )
+                    ) {
+                        append("∗∗∗∗  ∗∗∗∗  ∗∗∗∗ ")
+                    }
+
+                    append(" 3214")
+                }, style = TextStyle(
                     fontSize = 15.sp,
                     fontFamily = FontFamily(Font(R.font.nunito_bold))
                 ),

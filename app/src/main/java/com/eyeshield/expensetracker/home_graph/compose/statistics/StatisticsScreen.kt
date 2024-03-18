@@ -47,13 +47,16 @@ import com.eyeshield.expensetracker.home_graph.compose.home.TransactionDetails
 fun StatisticsScreen(navController: NavController) {
     val backIcon = remember { MutableInteractionSource() }
     val items = listOf("Week", "Month", "Year")
+    val statisticsBackgroundColor = colorResource(id = R.color.statistics_segmented_button_bg)
 
     val selectedSegment = remember { mutableStateOf(items[1]) }
-    val selectedSegmentBackgroundModifier = Modifier
-        .background(
-            colorResource(id = R.color.statistics_segmented_button_bg),
-            shape = RoundedCornerShape(50)
-        )
+    val selectedSegmentBackgroundModifier = remember {
+        Modifier
+            .background(
+                statisticsBackgroundColor,
+                shape = RoundedCornerShape(50)
+            )
+    }
 
 
 
@@ -74,12 +77,12 @@ fun StatisticsScreen(navController: NavController) {
                 modifier = Modifier
                     .size(30.dp)
                     .drawBehind {
-                        this.drawCircle(Color.White, radius = 55f)
+                        this.drawCircle(Color.White, radius = 40f)
                     }
                     .clickable(
                         interactionSource = backIcon, indication = rememberRipple(
                             bounded = false,
-                            radius = 18.dp,
+                            radius = 12.dp,
                             color = Color.Gray.copy(0.5f)
                         )
                     ) {
@@ -102,7 +105,16 @@ fun StatisticsScreen(navController: NavController) {
                 modifier = Modifier
                     .size(20.dp)
                     .drawBehind {
-                        this.drawCircle(Color.White, radius = 55f)
+                        this.drawCircle(Color.White, radius = 40f)
+                    }
+                    .clickable(
+                        interactionSource = backIcon, indication = rememberRipple(
+                            bounded = false,
+                            radius = 12.dp,
+                            color = Color.Gray.copy(0.5f)
+                        )
+                    ) {
+                        navController.popBackStack()
                     },
                 painter = painterResource(id = R.drawable.ic_share),
                 contentDescription = "Back"

@@ -45,4 +45,7 @@
     <color name="statistics_date">#aeaeae</color>
     <color name="statistics_segmented_button_bg">#282b30</color>
 
+    <color name="carbon_blue">#404750</color>
+    <color name="selected_day">@color/statistics_segmented_button_bg</color>
+
 </resources>
