@@ -1,6 +1,10 @@
 package com.eyeshield.expensetracker.calendar
 
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,24 +17,28 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -42,16 +50,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.utils.CalendarUtils
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun CalendarDesign() {
-    val pagerState = rememberPagerState(pageCount = {
-        10
-    })
+    val pagerState = rememberPagerState(pageCount = { 12 })
+
+
     val scope = rememberCoroutineScope()
+    val (currentMonth, setCurrentMonth) = remember { mutableIntStateOf(CalendarUtils.getCurrentMonth()) }
+    val monthAndYear = remember { mutableStateOf(CalendarUtils.getMonthAndYear(currentMonth)) }
+
+    LaunchedEffect(key1 = currentMonth) {
+        monthAndYear.value = CalendarUtils.getMonthAndYear(currentMonth)
+    }
 
     Surface(
         modifier = Modifier
@@ -72,7 +87,7 @@ fun CalendarDesign() {
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "March 2024", style = TextStyle(
+                    text = monthAndYear.value, style = TextStyle(
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
                         fontWeight = FontWeight.ExtraBold,
@@ -81,33 +96,52 @@ fun CalendarDesign() {
                 )
                 IconButton(onClick = {
                     scope.launch {
-                        pagerState.scrollToPage(pagerState.currentPage - 1)
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage - 1,
+                            animationSpec = tween(400, easing = LinearOutSlowInEasing)
+                        )
                     }
+                    setCurrentMonth(currentMonth - 1)
                 }) {
-                    Icon(Icons.Default.ChevronLeft, contentDescription = "Left Icon", tint = colorResource(
-                        id = R.color.carbon_blue
-                    ))
+                    Icon(
+                        Icons.Default.ChevronLeft,
+                        contentDescription = "Left Icon",
+                        tint = colorResource(
+                            id = R.color.carbon_blue
+                        )
+                    )
                 }
 
                 IconButton(onClick = {
                     scope.launch {
-                        pagerState.scrollToPage(pagerState.currentPage + 1)
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage + 1,
+                            animationSpec = tween(400, easing = LinearOutSlowInEasing)
+                        )
                     }
+                    setCurrentMonth(currentMonth + 1)
                 }) {
-                    Icon(Icons.Default.ChevronRight, contentDescription = "Left Icon", tint = colorResource(
-                        id = R.color.carbon_blue
-                    ))
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        contentDescription = "Left Icon",
+                        tint = colorResource(
+                            id = R.color.carbon_blue
+                        )
+                    )
                 }
             }
 
-            WeekDayAbbreviationBar(pagerState)
+            WeekDayAbbreviationBar(pagerState, currentMonth)
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WeekDayAbbreviationBar(pagerState: PagerState) {
+fun WeekDayAbbreviationBar(
+    pagerState: PagerState,
+    currentMonth: Int,
+) {
 
     val weekAbbreviationList = remember {
         listOf("S", "M", "T", "W", "T", "F", "S")
@@ -117,23 +151,40 @@ fun WeekDayAbbreviationBar(pagerState: PagerState) {
 
 
     val selectedDayColor = colorResource(id = R.color.selected_day)
-    val dayStartingColumn = remember { mutableIntStateOf(6) }
-    val selectedDay = remember { mutableIntStateOf(31) }
 
-    val startPosition = remember {
-        derivedStateOf {
-            if (dayStartingColumn.intValue - pagerState.currentPage >= 0)
-                dayStartingColumn.intValue - pagerState.currentPage
-            else
-                0
-        }
+    var calendarData by remember {
+        mutableStateOf(
+            CalendarData(
+                dayStartingColumn = CalendarUtils.getStartDayOfTheMonthOffset(currentMonth),
+                currentDay = CalendarUtils.getCurrentDay(),
+                totalDays = CalendarUtils.getTotalDaysForCurrentMonth(currentMonth),
+                selectedDay = 0
+            )
+        )
     }
 
-    val selectedBackgroundModifier = remember {
+    LaunchedEffect(key1 = currentMonth) {
+        calendarData = calendarData.copy(
+            dayStartingColumn = CalendarUtils.getStartDayOfTheMonthOffset(currentMonth),
+            currentDay = CalendarUtils.getCurrentDay(),
+            totalDays = CalendarUtils.getTotalDaysForCurrentMonth(currentMonth),
+            selectedDay = 0
+        )
+    }
+
+
+    val todayBackgroundModifier = remember {
         Modifier
             .drawBehind {
                 drawCircle(selectedDayColor, radius = 38f)
             }
+    }
+
+    val selectedDayBackgroundModifier = remember {
+        Modifier.drawBehind {
+            drawCircle(selectedDayColor, radius = 38f, style = Stroke(width = 2f))
+            drawCircle(selectedDayColor.copy(0.1f), radius = 38f)
+        }
     }
 
     Row(
@@ -155,32 +206,49 @@ fun WeekDayAbbreviationBar(pagerState: PagerState) {
         }
     }
 
-    HorizontalPager(state = pagerState) {
+    HorizontalPager(state = pagerState, userScrollEnabled = false) {
         LazyVerticalGrid(
+            state = state,
             columns = GridCells.Fixed(7),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             // Empty set of items to indicate the start day offset in the month
-            items(startPosition.value) {}
+            items(calendarData.dayStartingColumn) {}
 
-            items(31) { item ->
-                ClickableText(
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .then(if (selectedDay.intValue == item + 1) selectedBackgroundModifier else Modifier),
-                    text = buildAnnotatedString { append((item + 1).toString()) },
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.nunito_regular)),
-                        fontSize = 14.sp,
-                        color = if (selectedDay.intValue == item + 1) Color.White else colorResource(
-                            id = R.color.carbon_blue
-                        ),
-                        textAlign = TextAlign.Center
-                    ),
-                    onClick = {
-                        selectedDay.intValue = item + 1
-                    }
-                )
+            items(calendarData.totalDays) { item ->
+                key(item) {
+                    val interactionSource = remember { MutableInteractionSource() }
+                    Text(
+                        modifier = Modifier
+                            .padding(7.dp)
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = rememberRipple(bounded = false, radius = 15.dp),
+                                onClick = remember {
+                                    {
+                                        calendarData = calendarData.copy(selectedDay = item + 1)
+                                    }
+                                }
+                            )
+                            .then(
+                                if (calendarData.currentDay == item + 1 && CalendarUtils.getCurrentMonth() == currentMonth)
+                                    todayBackgroundModifier
+                                else if (calendarData.selectedDay != calendarData.currentDay && calendarData.selectedDay == item + 1)
+                                    selectedDayBackgroundModifier
+                                else
+                                    Modifier
+                            ),
+                        text = buildAnnotatedString { append((item + 1).toString()) },
+                        style = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.nunito_regular)),
+                            fontSize = 14.sp,
+                            color = if (calendarData.currentDay == item + 1 && CalendarUtils.getCurrentMonth() == currentMonth) Color.White else colorResource(
+                                id = R.color.carbon_blue
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                }
             }
         }
     }
