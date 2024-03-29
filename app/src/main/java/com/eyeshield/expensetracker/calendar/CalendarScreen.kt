@@ -1,8 +1,6 @@
 package com.eyeshield.expensetracker.calendar
 
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +37,7 @@ fun CalendarScreen() {
     val items = remember {
         mutableStateListOf(
             TransactionData(
+                expenseId = "0",
                 expenseResourceID = R.drawable.internet,
                 expenseName = "Broadband",
                 expenseDate = "07 Oct, 2001",
@@ -53,6 +52,7 @@ fun CalendarScreen() {
             .padding(15.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
+
         PaymentReminderCalendar(modifier = Modifier)
 
         Text(
@@ -91,6 +91,7 @@ fun CalendarScreen() {
                 items.add(
                     0,
                     TransactionData(
+                        expenseId = "${items.size + 1}",
                         expenseResourceID = R.drawable.internet,
                         expenseName = "Broadband",
                         expenseDate = "07 Nov, 2001",

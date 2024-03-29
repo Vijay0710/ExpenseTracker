@@ -97,7 +97,8 @@ fun TransactionDetailsPreview() {
             expenseResourceID = R.drawable.internet,
             expenseName = "Broadband",
             expenseDate = "07 Oct, 2001",
-            expenseAmount = "- ₹2500 "
+            expenseAmount = "- ₹2500 ",
+            expenseId = "2"
         )
     )
 }

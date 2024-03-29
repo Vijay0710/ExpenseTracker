@@ -207,7 +207,8 @@ fun Transactions() {
                         expenseResourceID = R.drawable.spotify_icon,
                         expenseName = "Spotify Premium",
                         expenseDate = "Sep 21, 2024",
-                        expenseAmount = "- ₹2500"
+                        expenseAmount = "- ₹2500",
+                        expenseId = "1"
                     ),
                 )
             }
