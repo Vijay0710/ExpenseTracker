@@ -44,6 +44,8 @@ fun RowScope.IncomeExpenseCard(
             .height(80.dp),
         shape = RoundedCornerShape(20),
         color = Color.White,
+        shadowElevation = 1.dp,
+        tonalElevation = 1.dp
     ) {
 
         Row(

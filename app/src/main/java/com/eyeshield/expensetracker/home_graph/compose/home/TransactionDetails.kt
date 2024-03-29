@@ -24,57 +24,80 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.calendar.models.TransactionData
 
 @Composable
-@Preview
-fun TransactionDetails() {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Color.White,
-        shape = RoundedCornerShape(20)
-    ) {
+fun TransactionDetails(
+    modifier: Modifier = Modifier,
+    transactionData: TransactionData
+) {
 
-        Row(
+    Column(modifier = modifier) {
+        Surface(
             modifier = Modifier
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth(),
+            color = Color.White,
+            shape = RoundedCornerShape(20),
+            shadowElevation = 1.dp,
+            tonalElevation = 1.dp
         ) {
-            Icon(
-                modifier = Modifier.size(40.dp),
-                painter = painterResource(id = R.drawable.spotify_icon),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
 
-            Column(modifier = Modifier) {
-                Text(
-                    text = "Spotify Premium", style = TextStyle(
-                        fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                        color = colorResource(id = R.color.transaction_name),
-                        fontWeight = FontWeight.W800
-                    )
+            Row(
+                modifier = Modifier
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(40.dp),
+                    painter = painterResource(id = transactionData.expenseResourceID),
+                    contentDescription = null,
+                    tint = Color.Unspecified
                 )
+
+                Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = transactionData.expenseName, style = TextStyle(
+                            fontSize = 15.sp,
+                            fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                            color = colorResource(id = R.color.transaction_name),
+                            fontWeight = FontWeight.W800,
+                        )
+                    )
+                    Text(
+                        text = transactionData.expenseDate, style = TextStyle(
+                            fontSize = 15.sp,
+                            fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                            color = colorResource(id = R.color.transaction_date)
+                        )
+                    )
+                }
+
                 Text(
-                    text = "07 Oct, 2001", style = TextStyle(
+                    modifier = Modifier,
+                    text = transactionData.expenseAmount, style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                        color = colorResource(id = R.color.transaction_date)
+                        color = colorResource(id = R.color.transaction_amount),
+                        fontWeight = FontWeight.W800
                     )
                 )
             }
 
-            Text(
-                modifier = Modifier,
-                text = "- ₹2500", style = TextStyle(
-                    fontSize = 15.sp,
-                    fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                    color = colorResource(id = R.color.transaction_amount),
-                    fontWeight = FontWeight.W800
-                )
-            )
         }
-
     }
+
+}
+
+@Composable
+@Preview
+fun TransactionDetailsPreview() {
+    TransactionDetails(
+        transactionData = TransactionData(
+            expenseResourceID = R.drawable.internet,
+            expenseName = "Broadband",
+            expenseDate = "07 Oct, 2001",
+            expenseAmount = "- ₹2500 "
+        )
+    )
 }

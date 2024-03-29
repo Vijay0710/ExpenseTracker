@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.calendar.models.TransactionData
 import com.eyeshield.expensetracker.home.SmoothLineGraph
 import com.eyeshield.expensetracker.home_graph.compose.home.TransactionDetails
 
@@ -196,7 +197,14 @@ fun StatisticsScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             repeat(2) {
-                TransactionDetails()
+                TransactionDetails(
+                    transactionData = TransactionData(
+                        expenseResourceID = R.drawable.spotify_icon,
+                        expenseName = "Spotify Premium",
+                        expenseDate = "Sep 21, 2024",
+                        expenseAmount = "- ₹2500"
+                    ),
+                )
             }
         }
 

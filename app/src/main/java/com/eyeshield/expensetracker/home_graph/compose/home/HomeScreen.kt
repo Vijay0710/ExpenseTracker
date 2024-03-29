@@ -54,6 +54,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.calendar.models.TransactionData
 import kotlinx.coroutines.delay
 
 @Composable
@@ -201,7 +202,14 @@ fun Transactions() {
             }
 
             items(2) {
-                TransactionDetails()
+                TransactionDetails(
+                    transactionData = TransactionData(
+                        expenseResourceID = R.drawable.spotify_icon,
+                        expenseName = "Spotify Premium",
+                        expenseDate = "Sep 21, 2024",
+                        expenseAmount = "- ₹2500"
+                    ),
+                )
             }
         }
     }
@@ -246,21 +254,22 @@ fun CreditCardContent(mainNavController: NavController) {
 
 
         Text(
-            text = "Balance", style = TextStyle(
+            text = "Balance: ₹ 58000.00", style = TextStyle(
                 color = Color.White.copy(0.5f),
                 fontFamily = FontFamily(Font(R.font.nunito_regular)),
                 fontSize = 14.sp
             )
         )
 
+
         Row(
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(top = 20.dp)
                 .weight(1f)
         ) {
             RadialGradientLinearProgressIndicator(
                 modifier = Modifier,
-                progress = 0.5f,
+                progress = (300000f - 58000f)/300000f,
                 startColor = colorResource(id = R.color.linear_progress_start),
                 endColor = colorResource(id = R.color.linear_progress_end)
             )
