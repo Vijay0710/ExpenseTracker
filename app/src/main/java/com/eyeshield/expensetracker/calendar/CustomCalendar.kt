@@ -98,12 +98,12 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                     )
                     IconButton(onClick = {
                         scope.launch {
+                            setCurrentMonth(currentMonth - 1)
                             pagerState.animateScrollToPage(
                                 pagerState.currentPage - 1,
-                                animationSpec = tween(400, easing = LinearOutSlowInEasing)
+                                animationSpec = tween(600, easing = LinearOutSlowInEasing)
                             )
                         }
-                        setCurrentMonth(currentMonth - 1)
                     }) {
                         Icon(
                             Icons.Default.ChevronLeft,
@@ -116,12 +116,12 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
 
                     IconButton(onClick = {
                         scope.launch {
+                            setCurrentMonth(currentMonth + 1)
                             pagerState.animateScrollToPage(
                                 pagerState.currentPage + 1,
-                                animationSpec = tween(400, easing = LinearOutSlowInEasing)
+                                animationSpec = tween(600, easing = LinearOutSlowInEasing)
                             )
                         }
-                        setCurrentMonth(currentMonth + 1)
                     }) {
                         Icon(
                             Icons.Default.ChevronRight,

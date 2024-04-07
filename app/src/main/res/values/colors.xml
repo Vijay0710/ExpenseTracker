@@ -48,4 +48,8 @@
     <color name="carbon_blue">#404750</color>
     <color name="selected_day">@color/statistics_segmented_button_bg</color>
 
+    <!-- Record Expense Screen  -->
+    <color name="record_expense_bg">#090a0b</color>
+    <color name="pricing_type">#67696d</color>
+
 </resources>

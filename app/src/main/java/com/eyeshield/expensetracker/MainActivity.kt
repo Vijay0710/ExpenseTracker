@@ -13,9 +13,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.eyeshield.expensetracker.calendar.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.home_graph.compose.statistics.StatisticsScreen
 import com.eyeshield.expensetracker.ui.theme.ExpenseTrackerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination =  MainNavRoutes.BottomNavigation.route
+                        startDestination = MainNavRoutes.BottomNavigation.route
                     ) {
                         composable(MainNavRoutes.BottomNavigation.route) {
                             BottomNavigation(navController)
@@ -41,6 +44,14 @@ class MainActivity : ComponentActivity() {
                             exitTransition = NavigationExtensions.slideIntoContainerFromLeftToRight()
                         ) {
                             StatisticsScreen(navController)
+                        }
+
+                        composable(
+                            MainNavRoutes.AddExpenseScreen.route,
+                            enterTransition = NavigationExtensions.slideIntoContainerFromRightToLeft(),
+                            exitTransition = NavigationExtensions.slideIntoContainerFromLeftToRight()
+                        ) {
+                            AddExpenseScreen(navController)
                         }
                     }
                 }

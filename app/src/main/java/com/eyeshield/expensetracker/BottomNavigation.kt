@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -15,6 +14,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,13 +32,13 @@ import com.eyeshield.expensetracker.NavigationExtensions.popUpToHomeScreen
 import com.eyeshield.expensetracker.add.AddScreen
 import com.eyeshield.expensetracker.bottomnav.Screens
 import com.eyeshield.expensetracker.calendar.CalendarScreen
+import com.eyeshield.expensetracker.calendar.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
 import com.eyeshield.expensetracker.home_graph.compose.home.HomeScreen
 import com.eyeshield.expensetracker.settings.SettingsScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavigation(mainNavController : NavController) {
+fun BottomNavigation(mainNavController: NavController) {
 
     val navController = rememberNavController()
 
@@ -62,9 +63,11 @@ fun BottomNavigation(mainNavController : NavController) {
                         modifier = Modifier,
                         selected = currentDestination?.route == item.route,
                         onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(item.route) {
-                                    inclusive = true
+                            if(currentDestination?.route != item.route) {
+                                navController.navigate(item.route) {
+                                    popUpTo(item.route) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         },
@@ -98,7 +101,21 @@ fun BottomNavigation(mainNavController : NavController) {
             }
             composable(Screens.CalendarScreen.route) {
                 BackHandler { navController.popUpToHomeScreen() }
-                CalendarScreen()
+
+                val transactionViewModel: TransactionViewModel = hiltViewModel()
+
+                LaunchedEffect(key1 = Unit) {
+                    transactionViewModel.getTransactions()
+                }
+
+                CalendarScreen(
+                    onAddTransaction = {
+                        transactionViewModel.recordATransaction(it)
+                    },
+                    getAllTransactions = transactionViewModel.databaseResult.value.data,
+                    databaseStatus = transactionViewModel.databaseStatus.value,
+                    mainNavController
+                )
             }
             composable(Screens.AddScreen.route) {
                 BackHandler { navController.popUpToHomeScreen() }
