@@ -67,85 +67,54 @@ fun SmoothLineGraph() {
         val textMeasurer = rememberTextMeasurer()
         val labelTextStyle = MaterialTheme.typography.labelSmall
 
-        Spacer(modifier = Modifier
-            .padding(8.dp)
-            .aspectRatio(3 / 2f)
-            .align(Alignment.Center)
-            .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { offset ->
-                        highlightedWeek =
-                            (offset.x / (size.width / (graphData.size - 1))).roundToInt()
-                    },
-                    onDragEnd = { highlightedWeek = null },
-                    onDragCancel = { highlightedWeek = null },
-                    onDrag = { change, _ ->
-                        highlightedWeek =
-                            (change.position.x / (size.width / (graphData.size - 1))).roundToInt()
-                    }
-                )
-            }
-            .drawWithCache {
-                val path = getSmoothPath(graphData, size)
-                val filledPath = Path()
-                filledPath.addPath(path)
-                filledPath.relativeLineTo(0f, size.height)
-                filledPath.lineTo(0f, size.height)
-                filledPath.close()
-                onDrawBehind {
-                    val barWidthPx = 1.dp.toPx()
-                    /*
-                    * Draws Line at X-Axis
-                    * */
-//                    drawLine(
-//                        color = BarColor,
-//                        start = Offset(0f, 0f),
-//                        end = Offset(0f, size.height),
-//                        strokeWidth = barWidthPx
-//                    )
-                    /*
-                     * Draws Line at Y-Axis
-                     * */
-//                    drawLine(
-//                        color = BarColor,
-//                        start = Offset(0f, size.height),
-//                        end = Offset(size.width, size.height),
-//                        strokeWidth = barWidthPx
-//                    )
+        Spacer(
+            modifier = Modifier
+                .padding(8.dp)
+                .aspectRatio(3 / 2f)
+                .align(Alignment.Center)
+                .pointerInput(Unit) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = { offset ->
+                            highlightedWeek =
+                                (offset.x / (size.width / (graphData.size - 1))).roundToInt()
+                        },
+                        onDragEnd = { highlightedWeek = null },
+                        onDragCancel = { highlightedWeek = null },
+                        onDrag = { change, _ ->
+                            highlightedWeek =
+                                (change.position.x / (size.width / (graphData.size - 1))).roundToInt()
+                        }
+                    )
+                }
+                .drawWithCache {
+                    val path = getSmoothPath(graphData, size)
+                    val filledPath = Path()
+                    filledPath.addPath(path)
+                    filledPath.relativeLineTo(0f, size.height)
+                    filledPath.lineTo(0f, size.height)
+                    filledPath.close()
+                    onDrawBehind {
+                        clipRect(right = size.width * animationProgress.value) {
+                            drawPath(path, Color(0xFF1c2024), style = Stroke(2.dp.toPx()))
 
-                    // Shows number at the x axis but unstable
-//                    repeat(months.size - 1) {
-//                        drawText(
-//                            textLayoutResult = textMeasurer.measure(
-//                                months[it],
-//                                style = labelTextStyle
-//                            ), color = Color(0xFF1c2024),
-//                            topLeft = Offset(it * 100f, size.height)
-//                        )
-//                    }
+                            drawPath(
+                                filledPath,
+                                brush = Brush.verticalGradient(
+                                    listOf(
+                                        Color(0xFF1c2024).copy(alpha = 0.4f),
+                                        Color.Transparent
+                                    )
+                                ),
+                                style = Fill
+                            )
+                        }
 
-
-                    clipRect(right = size.width * animationProgress.value) {
-                        drawPath(path, Color(0xFF1c2024), style = Stroke(2.dp.toPx()))
-
-                        drawPath(
-                            filledPath,
-                            brush = Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFF1c2024).copy(alpha = 0.4f),
-                                    Color.Transparent
-                                )
-                            ),
-                            style = Fill
-                        )
-                    }
-
-                    // draw highlight if user is dragging
-                    highlightedWeek?.let {
-                        this.drawHighlight(it, graphData, textMeasurer, labelTextStyle)
+                        // draw highlight if user is dragging
+                        highlightedWeek?.let {
+                            drawHighlight(it, graphData, textMeasurer, labelTextStyle)
+                        }
                     }
                 }
-            }
         )
     }
 }
@@ -198,12 +167,10 @@ fun DrawScope.drawHighlight(
     textMeasurer: TextMeasurer,
     labelTextStyle: TextStyle
 ) {
-
     val reformedHighlightedWeek =
         if (highlightedWeek <= -1) 0
         else if (highlightedWeek >= graphData.size) graphData.size - 1
         else highlightedWeek
-
 
     // When we force drag to the end or start index becomes OutOfBounds So we need to handle it manually
     val amount = graphData[reformedHighlightedWeek].amount
@@ -257,7 +224,7 @@ fun DrawScope.drawHighlight(
     )
 }
 
-val BarColor = Color.Black.copy(alpha = 0.3f)
+
 val HighlightColor = Color.Black.copy(alpha = 0.3f)
 
 val graphData = listOf(

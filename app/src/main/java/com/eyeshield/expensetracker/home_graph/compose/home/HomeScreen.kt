@@ -11,9 +11,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,23 +57,95 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar.models.TransactionData
+import com.eyeshield.expensetracker.cards.CardInfo
 import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(mainNavController: NavController) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
-    var cardFace by remember { mutableStateOf(CardFace.Front) }
     val showLogOutDialog = remember { mutableStateOf(false) }
+    val cardsListSize = remember {
+        mutableIntStateOf(3)
+    }
+
+    val cardColors: List<Int> = remember {
+        listOf(
+            R.color.card_color_1,
+            R.color.card_color_2,
+            R.color.card_color_3
+        )
+    }
+    val cardInfoList = remember {
+        mutableStateListOf<CardInfo>()
+    }
+
+    val selectedCard by remember {
+        derivedStateOf {
+            mutableStateOf(
+                cardInfoList[0]
+            )
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        repeat(cardsListSize.intValue) { index ->
+            cardInfoList.add(
+                CardInfo(
+                    position = index,
+                    zIndex = index * 1f,
+                    offsetY = index * 30.dp,
+                    cardColor = cardColors[index]
+                )
+            )
+        }
+    }
 
     BackHandler {
         showLogOutDialog.value = !showLogOutDialog.value
     }
+
+    val swapCardDetailsOnCardClick: (Int, CardInfo) -> CardInfo =
+        remember {
+            { index, selectedCard ->
+
+
+                val getCardDataForMaximumCard = cardInfoList.maxByOrNull {
+                    it.zIndex
+                }
+
+                val maximumItemIndex = cardInfoList.indexOf(
+                    getCardDataForMaximumCard
+                )
+
+                val temp = cardInfoList[index].copy()
+
+                cardInfoList[index] =
+                    cardInfoList[maximumItemIndex].copy(
+                        zIndex = cardInfoList[maximumItemIndex].zIndex,
+                        offsetY = cardInfoList[maximumItemIndex].offsetY,
+                        cardColor = cardInfoList[index].cardColor,
+                        position = cardInfoList[maximumItemIndex].position
+                    )
+
+                cardInfoList[maximumItemIndex] = temp.copy(
+                    zIndex = temp.zIndex,
+                    offsetY = temp.offsetY,
+                    cardColor = cardInfoList[maximumItemIndex].cardColor,
+                    position = temp.position
+                )
+
+                selectedCard
+
+            }
+        }
 
     Column(
         modifier = Modifier
@@ -103,7 +182,7 @@ fun HomeScreen(mainNavController: NavController) {
                     .size(20.dp)
                     .align(Alignment.CenterVertically)
                     .drawBehind {
-                        this.drawCircle(Color.White, radius = 48f)
+                        drawCircle(Color.White, radius = 48f)
                     }
                     .clickable(
                         interactionSource = interactionSource, indication = rememberRipple(
@@ -116,22 +195,53 @@ fun HomeScreen(mainNavController: NavController) {
                     },
                 painter = painterResource(id = R.drawable.notification),
                 contentDescription = "Notification",
-                tint = if (isPressed.value) colorResource(id = R.color.notification_pressed_state) else Color.Unspecified
+                tint = if (isPressed.value)
+                    colorResource(id = R.color.notification_pressed_state)
+                else
+                    Color.Unspecified
             )
         }
 
-        CreditCard(
-            cardFace = cardFace,
-            onClick = {
-                cardFace = cardFace.next
-            },
-            front = {
-                CreditCardContent(mainNavController)
-            },
-            back = {
+        Box {
+            cardInfoList.forEachIndexed { index, cardPositionAndOffsetState ->
+
+                key(cardPositionAndOffsetState) {
+
+                    var cardFace by remember { mutableStateOf(CardFace.Front) }
+
+                    CreditCard(
+                        modifier = Modifier
+                            .zIndex(cardPositionAndOffsetState.zIndex)
+                            .absoluteOffset(y = cardPositionAndOffsetState.offsetY),
+                        cardContainerColor = colorResource(
+                            cardPositionAndOffsetState.cardColor
+                        ),
+                        cardFace = cardFace,
+                        onClick = {
+                            if (cardPositionAndOffsetState.position == cardInfoList.size - 1) {
+                                cardFace = cardFace.next
+                            } else {
+                                selectedCard.value =
+                                    swapCardDetailsOnCardClick(
+                                        index,
+                                        cardPositionAndOffsetState
+                                    ).copy()
+                            }
+                        },
+                        front = {
+                            CreditCardContent(mainNavController)
+                        },
+                        back = {
+
+                        }
+                    )
+                }
+
 
             }
-        )
+        }
+
+        Spacer(modifier = Modifier.padding(bottom = 5.dp * 3))
 
         Transactions()
     }
@@ -162,8 +272,12 @@ fun Transactions() {
                     .size(30.dp)
                     .align(Alignment.CenterVertically)
                     .clickable(
-                        interactionSource = interactionSource, indication = null
-                    ) {},
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = {
+
+                        }
+                    ),
                 painter = painterResource(id = R.drawable.ic_transaction_details),
                 contentDescription = "Notification",
                 tint = if (isPressed.value) Color.Gray.copy(0.6f) else colorResource(id = R.color.notification_pressed_state)
@@ -270,7 +384,7 @@ fun CreditCardContent(mainNavController: NavController) {
         ) {
             RadialGradientLinearProgressIndicator(
                 modifier = Modifier,
-                progress = (300000f - 58000f)/300000f,
+                progress = (300000f - 58000f) / 300000f,
                 startColor = colorResource(id = R.color.linear_progress_start),
                 endColor = colorResource(id = R.color.linear_progress_end)
             )

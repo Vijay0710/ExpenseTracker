@@ -179,8 +179,7 @@ fun CustomCalendar(
     }
 
     val todayBackgroundModifier = remember {
-        Modifier
-            .drawBehind {
+        Modifier.drawBehind {
                 drawCircle(selectedDayColor, radius = 38f)
             }
     }

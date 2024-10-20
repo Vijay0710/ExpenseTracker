@@ -88,7 +88,6 @@ fun CalendarScreen(
             )
         )
 
-
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(15.dp)

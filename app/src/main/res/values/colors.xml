@@ -9,47 +9,50 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="shadow_white">#F6F6F6</color>
-    <color name="graphite_gray">#292d32</color>
+    <color name="graphite_gray">#292D32</color>
     <color name="greeting">#BFBFBF</color>
     <color name="username">#121A2E</color>
     <color name="notification_pressed_state">#333333</color>
 
     <color name="credit_card_number">#FDFDFD</color>
+    <color name="card_color_1">@color/graphite_gray</color>
+    <color name="card_color_2">#3B556E</color>
+    <color name="card_color_3">#F3B493</color>
     <!-- Income Expense Card Color References -->
 
     <!--  Common  -->
     <color name="income_or_expense_text">#434343</color>
 
     <!-- Expense Card Color References -->
-    <color name="expense_icon">#ff9902</color>
-    <color name="expense_icon_background">#fff0d9</color>
-    <color name="expense_percentage">#ff8501</color>
+    <color name="expense_icon">#FF9902</color>
+    <color name="expense_icon_background">#FFF0D9</color>
+    <color name="expense_percentage">#FF8501</color>
 
     <!-- Income Card Color References -->
-    <color name="income_icon">#36e66b</color>
-    <color name="income_icon_background">#e3fcea</color>
-    <color name="income_percentage">#1fe35b</color>
+    <color name="income_icon">#36E66B</color>
+    <color name="income_icon_background">#E3FCEA</color>
+    <color name="income_percentage">#1FE35B</color>
 
     <!-- Linear Progress Bar References-->
-    <color name="linear_progress_background">#393a3a</color>
+    <color name="linear_progress_background">#393A3A</color>
     <color name="linear_progress_start">#EB001B</color>
-    <color name="linear_progress_end">#f79e1b</color>
+    <color name="linear_progress_end">#F79E1B</color>
 
     <!-- Transactions Color References -->
     <color name="transaction_heading">#101010</color>
     <color name="transaction_name">#232323</color>
     <color name="transaction_amount">#252525</color>
-    <color name="transaction_date">#c0c0c0</color>
+    <color name="transaction_date">#C0C0C0</color>
 
     <!-- Statistics Color References -->
-    <color name="statistics_date">#aeaeae</color>
-    <color name="statistics_segmented_button_bg">#282b30</color>
+    <color name="statistics_date">#AEAEAE</color>
+    <color name="statistics_segmented_button_bg">#282B30</color>
 
     <color name="carbon_blue">#404750</color>
-    <color name="selected_day">@color/statistics_segmented_button_bg</color>
+    <color name="selected_day">#282B30</color>
 
     <!-- Record Expense Screen  -->
-    <color name="record_expense_bg">#090a0b</color>
-    <color name="pricing_type">#67696d</color>
+    <color name="record_expense_bg">#090A0B</color>
+    <color name="pricing_type">#67696D</color>
 
 </resources>

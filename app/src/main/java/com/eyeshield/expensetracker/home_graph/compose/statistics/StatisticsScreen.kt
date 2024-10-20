@@ -174,7 +174,9 @@ fun StatisticsScreen(navController: NavController) {
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.nunito_semi_bold))
                     ),
-                    color = colorResource(id = R.color.statistics_date)
+                    color = if (selectedSegment.value == items[it]) colorResource(R.color.white) else colorResource(
+                        id = R.color.statistics_date
+                    )
                 )
                 Spacer(modifier = Modifier.padding(end = 10.dp))
             }

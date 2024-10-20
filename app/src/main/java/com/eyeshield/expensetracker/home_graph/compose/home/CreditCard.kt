@@ -6,7 +6,10 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eyeshield.expensetracker.R
 
@@ -32,6 +36,7 @@ enum class CardFace(val angle: Float) {
         override val next: CardFace
             get() = Back
     },
+
     Back(180f) {
         override val next: CardFace
             get() = Front
@@ -43,6 +48,8 @@ enum class CardFace(val angle: Float) {
 
 @Composable
 fun CreditCard(
+    modifier: Modifier = Modifier,
+    cardContainerColor: Color = colorResource(R.color.graphite_gray),
     cardFace: CardFace,
     onClick: (CardFace) -> Unit,
     front: @Composable () -> Unit,
@@ -56,25 +63,24 @@ fun CreditCard(
             easing = LinearOutSlowInEasing,
         ), label = "Card Flip Animation"
     )
-    
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            ) {
-                onClick(cardFace)
-            }
+                indication = null,
+                onClick = {
+                    onClick(cardFace)
+                }
+            )
             .graphicsLayer {
-                rotationY = rotation.value
+                rotationY = -(rotation.value)
+                cameraDistance = 30f
             },
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(
-                id = R.color.graphite_gray
-            )
+            containerColor = cardContainerColor
         ),
         shape = RoundedCornerShape(30.dp),
         elevation = CardDefaults.cardElevation(24.dp)
@@ -83,35 +89,80 @@ fun CreditCard(
             .fillMaxSize()
             .graphicsLayer {
                 if (rotation.value > 90f) rotationY = 180f
-            }) {
-            Box(modifier = Modifier
-                .size(50.dp)
-                .align(if (rotation.value <= 90f) Alignment.BottomStart else Alignment.BottomEnd)
-                .drawWithContent {
-                    drawCircle(radius = 140f, color = Color.White, alpha = 0.1f)
-                })
-            Box(modifier = Modifier
-                .size(70.dp)
-                .align(if (rotation.value <= 90f) Alignment.TopEnd else Alignment.TopStart)
-                .drawWithContent {
-                    val centerX = size.width / 2
-                    val centerY = size.height / 2
-                    val radius = 150F
-
-                    drawCircle(
-                        color = Color.White,
-                        center = Offset(centerX, centerY),
-                        radius = radius,
-                        style = Stroke(width = 70F),
-                        alpha = 0.1f,
-                    )
-                })
-
+            }
+        ) {
+            CardCornerCircles(rotation = rotation.value)
 
             if (rotation.value <= 90f)
                 front.invoke()
             else
                 back.invoke()
         }
+    }
+}
+
+@Composable
+fun BoxScope.CardCornerCircles(
+    rotation: Float
+) {
+    Box(modifier = Modifier
+        .size(50.dp)
+        .align(if (rotation <= 90f) Alignment.BottomStart else Alignment.BottomEnd)
+        .drawWithContent {
+            drawCircle(radius = 140f, color = Color.White, alpha = 0.1f)
+        }
+    )
+
+    Box(modifier = Modifier
+        .size(70.dp)
+        .align(if (rotation <= 90f) Alignment.TopEnd else Alignment.TopStart)
+        .drawWithContent {
+
+            val centerX = size.width / 2
+            val centerY = size.height / 2
+            val radius = 150F
+
+            drawCircle(
+                color = Color.White,
+                center = Offset(centerX, centerY),
+                radius = radius,
+                style = Stroke(width = 70F),
+                alpha = 0.1f,
+            )
+        }
+    )
+}
+
+
+@Preview
+@Composable
+private fun PreviewCardScreen() {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        // Card Front Content
+        CreditCard(
+            cardFace = CardFace.Front,
+            onClick = { _ -> },
+            front = {
+
+            },
+            back = {
+
+            }
+        )
+
+        // Card Back Content
+        CreditCard(
+            cardFace = CardFace.Back,
+            onClick = { _ -> },
+            front = {
+
+            },
+            back = {
+
+            }
+        )
     }
 }
