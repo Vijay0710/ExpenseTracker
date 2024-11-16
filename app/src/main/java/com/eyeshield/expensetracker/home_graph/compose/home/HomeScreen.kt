@@ -3,11 +3,15 @@ package com.eyeshield.expensetracker.home_graph.compose.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +51,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -95,6 +102,11 @@ fun HomeScreen(mainNavController: NavController) {
         }
     }
 
+    // To show 3D effect in Y Axis when user scrolls to the end of cards
+    var rotationYAxis by remember {
+        mutableFloatStateOf(0f)
+    }
+
     LaunchedEffect(Unit) {
         repeat(cardsListSize.intValue) { index ->
             cardInfoList.add(
@@ -115,8 +127,6 @@ fun HomeScreen(mainNavController: NavController) {
     val swapCardDetailsOnCardClick: (Int, CardInfo) -> CardInfo =
         remember {
             { index, selectedCard ->
-
-
                 val getCardDataForMaximumCard = cardInfoList.maxByOrNull {
                     it.zIndex
                 }
@@ -202,17 +212,51 @@ fun HomeScreen(mainNavController: NavController) {
             )
         }
 
-        Box {
+        Box(
+            modifier = Modifier
+                .graphicsLayer {
+                    rotationY = rotationYAxis
+                    cameraDistance = 20f
+                }
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDrag = { _, dragAmount ->
+                            rotationYAxis =
+                                (rotationYAxis + dragAmount.x / 5).coerceIn(-20f, 20f)
+                        },
+                        onDragEnd = {
+                            rotationYAxis = 0f
+                        },
+                        onDragCancel = {
+                            rotationYAxis = 0f
+                        },
+                    )
+                }
+        ) {
             cardInfoList.forEachIndexed { index, cardPositionAndOffsetState ->
 
-                key(cardPositionAndOffsetState) {
-
+                key(index) {
                     var cardFace by remember { mutableStateOf(CardFace.Front) }
+
+                    val zOffsetDelay = remember(index) { 100 * index }
+                    val yOffsetDelay = remember(index) { 2 * zOffsetDelay + 100 }
+
+                    val animateYOffset = animateDpAsState(
+                        targetValue = cardPositionAndOffsetState.offsetY,
+                        label = "Y Offset Animation",
+                        animationSpec = tween(500, easing = EaseIn, delayMillis = yOffsetDelay)
+                    )
+
+                    val animateZIndex = animateFloatAsState(
+                        targetValue = cardPositionAndOffsetState.zIndex,
+                        label = "Z index animation",
+                        animationSpec = tween(500, easing = EaseIn, delayMillis = zOffsetDelay)
+                    )
 
                     CreditCard(
                         modifier = Modifier
-                            .zIndex(cardPositionAndOffsetState.zIndex)
-                            .absoluteOffset(y = cardPositionAndOffsetState.offsetY),
+                            .zIndex(animateZIndex.value)
+                            .absoluteOffset(y = animateYOffset.value),
                         cardContainerColor = colorResource(
                             cardPositionAndOffsetState.cardColor
                         ),
