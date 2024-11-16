@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.calendar
+package com.eyeshield.expensetracker.calendar_graph
 
 
 import androidx.compose.animation.core.LinearEasing
@@ -45,10 +45,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.calendar.models.TransactionData
+import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
+import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 import com.eyeshield.expensetracker.database.DatabaseStatus
-import com.eyeshield.expensetracker.home_graph.compose.home.TransactionDetails
-import com.eyeshield.expensetracker.home_graph.compose.home.TransactionDetailsShimmer
+import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetails
+import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetailsShimmer
 
 @Composable
 @Preview(showBackground = true)
@@ -140,7 +141,6 @@ fun Modifier.shimmerLoadingAnimation(
     durationMillis: Int = 1000,
 ): Modifier {
     return composed {
-
         var size by remember { mutableStateOf(IntSize.Zero) }
         val shimmerColors = listOf(
             Color(0xFFB8B5B5),
@@ -162,7 +162,6 @@ fun Modifier.shimmerLoadingAnimation(
             ),
             label = "Shimmer loading animation",
         )
-
         this
             .background(
                 brush = Brush.linearGradient(

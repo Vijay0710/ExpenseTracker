@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.calendar.models.TransactionData
-import com.eyeshield.expensetracker.home.SmoothLineGraph
-import com.eyeshield.expensetracker.home_graph.compose.home.TransactionDetails
+import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
+import com.eyeshield.expensetracker.home_graph.compose.home.components.SmoothLineGraph
+import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetails
 
 
 @Composable

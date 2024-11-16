@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.cards
+package com.eyeshield.expensetracker.cards.data
 
 import androidx.annotation.ColorRes
 import androidx.compose.ui.unit.Dp

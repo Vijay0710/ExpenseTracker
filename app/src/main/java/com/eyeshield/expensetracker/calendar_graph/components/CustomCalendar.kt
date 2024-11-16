@@ -1,8 +1,7 @@
-package com.eyeshield.expensetracker.calendar
+package com.eyeshield.expensetracker.calendar_graph.components
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -50,15 +50,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.calendar.models.CalendarData
+import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
 import com.eyeshield.expensetracker.utils.CalendarUtils
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 @Preview
 fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
-    val pagerState = rememberPagerState(pageCount = { 12 })
+    val pagerState = rememberPagerState(
+        pageCount = { 12 }
+    )
+    val context = LocalContext.current
 
 
     val scope = rememberCoroutineScope()
@@ -98,12 +100,12 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                     )
                     IconButton(onClick = {
                         scope.launch {
-                            setCurrentMonth(currentMonth - 1)
                             pagerState.animateScrollToPage(
-                                pagerState.currentPage - 1,
-                                animationSpec = tween(600, easing = LinearOutSlowInEasing)
+                                page = pagerState.currentPage - 1,
+                                animationSpec = tween(600, easing = LinearOutSlowInEasing),
                             )
                         }
+                        setCurrentMonth(currentMonth - 1)
                     }) {
                         Icon(
                             Icons.Default.ChevronLeft,
@@ -116,12 +118,14 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
 
                     IconButton(onClick = {
                         scope.launch {
-                            setCurrentMonth(currentMonth + 1)
-                            pagerState.animateScrollToPage(
-                                pagerState.currentPage + 1,
-                                animationSpec = tween(600, easing = LinearOutSlowInEasing)
-                            )
+                            if (pagerState.pageCount != pagerState.currentPage) {
+                                pagerState.animateScrollToPage(
+                                    page = pagerState.currentPage + 1,
+                                    animationSpec = tween(600, easing = LinearOutSlowInEasing)
+                                )
+                            }
                         }
+                        setCurrentMonth(currentMonth + 1)
                     }) {
                         Icon(
                             Icons.Default.ChevronRight,
@@ -139,10 +143,8 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
     }
 
 
-
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CustomCalendar(
     pagerState: PagerState,
@@ -154,6 +156,9 @@ fun CustomCalendar(
     }
 
     val state = rememberLazyGridState()
+    val horizontalPagerState = remember(pagerState) {
+        pagerState
+    }
 
     var calendarData by remember {
         mutableStateOf(
@@ -180,13 +185,13 @@ fun CustomCalendar(
 
     val todayBackgroundModifier = remember {
         Modifier.drawBehind {
-                drawCircle(selectedDayColor, radius = 38f)
-            }
+            drawCircle(selectedDayColor, radius = 38f)
+        }
     }
 
     val selectedDayBackgroundModifier = remember {
         Modifier.drawBehind {
-            drawCircle(selectedDayColor, radius = 38f, style = Stroke(width = 2f))
+            drawCircle(selectedDayColor, radius = 38f, style = Stroke(width = 4f))
             drawCircle(selectedDayColor.copy(0.1f), radius = 38f)
         }
     }
@@ -210,17 +215,18 @@ fun CustomCalendar(
         }
     }
 
-    HorizontalPager(state = pagerState, userScrollEnabled = false) {
+    HorizontalPager(state = horizontalPagerState, userScrollEnabled = false) {
         LazyVerticalGrid(
             state = state,
             columns = GridCells.Fixed(7),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = true,
         ) {
             // Empty set of items to indicate the start day offset in the month
             items(calendarData.dayStartingColumn) {}
 
             items(calendarData.totalDays) { item ->
-                key(item) {
+                key(horizontalPagerState, item) {
                     val interactionSource = remember { MutableInteractionSource() }
                     Text(
                         modifier = Modifier
@@ -235,20 +241,24 @@ fun CustomCalendar(
                                 }
                             )
                             .then(
-                                if (calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
+                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
                                     todayBackgroundModifier
                                 else if (calendarData.selectedDay != calendarData.currentDay && calendarData.selectedDay == item + 1)
                                     selectedDayBackgroundModifier
                                 else
                                     Modifier
                             ),
-                        text = buildAnnotatedString { append((item + 1).toString()) },
+                        text = buildAnnotatedString {
+                            append("${item + 1}")
+                        },
                         style = TextStyle(
                             fontFamily = FontFamily(Font(R.font.nunito_regular)),
                             fontSize = 14.sp,
-                            color = if (calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition) Color.White else colorResource(
-                                id = R.color.carbon_blue
-                            ),
+                            color =
+                            if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
+                                Color.White
+                            else
+                                colorResource(id = R.color.carbon_blue),
                             textAlign = TextAlign.Center
                         )
                     )
@@ -256,4 +266,5 @@ fun CustomCalendar(
             }
         }
     }
+
 }

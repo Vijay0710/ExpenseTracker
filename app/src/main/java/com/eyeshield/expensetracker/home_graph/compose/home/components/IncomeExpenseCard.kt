@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home_graph.compose.home
+package com.eyeshield.expensetracker.home_graph.compose.home.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
@@ -97,8 +97,8 @@ fun RowScope.IncomeExpenseCard(
 
 @Composable
 @Preview
-private fun PreviewIncomeCard() {
-    Row {
+private fun PreviewIncomeAndExpenseCard() {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         IncomeExpenseCard(
             resourceId = R.drawable.income,
             resourceIdColor = Color(0xFF36e66b),
@@ -107,13 +107,7 @@ private fun PreviewIncomeCard() {
             resourcePercentageColor = Color(0xFF1fe35b),
             resourceType = "Income"
         )
-    }
-}
 
-@Composable
-@Preview
-private fun PreviewExpenseCard() {
-    Row {
         IncomeExpenseCard(
             resourceId = R.drawable.expense,
             resourceIdColor = Color(0xFFff9902),

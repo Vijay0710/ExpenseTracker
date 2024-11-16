@@ -29,8 +29,8 @@ import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.NavigationExtensions.popUpToHomeScreen
 import com.eyeshield.expensetracker.add.AddScreen
 import com.eyeshield.expensetracker.bottomnav.Screens
-import com.eyeshield.expensetracker.calendar.CalendarScreen
-import com.eyeshield.expensetracker.calendar.TransactionViewModel
+import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
+import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
 import com.eyeshield.expensetracker.home_graph.compose.home.HomeScreen
 import com.eyeshield.expensetracker.settings.SettingsScreen

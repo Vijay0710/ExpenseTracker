@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.eyeshield.expensetracker.calendar.expense.AddExpenseScreen
+import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.home_graph.compose.statistics.StatisticsScreen
 import com.eyeshield.expensetracker.ui.theme.ExpenseTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home_graph.compose.home
+package com.eyeshield.expensetracker.home_graph.compose.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.calendar.models.TransactionData
-import com.eyeshield.expensetracker.calendar.shimmerLoadingAnimation
+import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
+import com.eyeshield.expensetracker.calendar_graph.shimmerLoadingAnimation
 
 @Composable
 fun TransactionDetails(
