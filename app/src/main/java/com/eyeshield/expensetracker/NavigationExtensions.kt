@@ -11,8 +11,8 @@ import com.eyeshield.expensetracker.bottomnav.Screens
 object NavigationExtensions {
 
     fun NavController.popUpToHomeScreen(
-        popRoute: String = Screens.HomeScreen.route,
-        route: String = Screens.HomeScreen.route
+        popRoute: Screens = Screens.HomeScreen,
+        route: Screens = Screens.HomeScreen
     ) {
         navigate(route) {
             popUpTo(popRoute) {

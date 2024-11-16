@@ -21,17 +21,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,7 +84,7 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
                         }
                         .clickable(
                             interactionSource = backIconInteractionSource,
-                            indication = rememberRipple(
+                            indication = ripple(
                                 bounded = false,
                                 radius = 12.dp,
                                 color = Color.Gray.copy(0.5f)
@@ -118,7 +114,7 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
                         }
                         .clickable(
                             interactionSource = backIconInteractionSource,
-                            indication = rememberRipple(
+                            indication = ripple(
                                 bounded = false,
                                 radius = 12.dp,
                                 color = Color.Gray.copy(0.5f)
@@ -182,42 +178,41 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
 
             Spacer(modifier = Modifier.padding(top = 25.dp))
 
-            CompositionLocalProvider(value = LocalRippleTheme provides DisabledRippleTheme) {
-                Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .drawBehind {
-                            drawRoundRect(
-                                color = Color.White,
-                                style = stroke,
-                                cornerRadius = CornerRadius(8.dp.toPx())
-                            )
-                        },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    border = BorderStroke(0.dp, Color.Transparent),
-                    interactionSource = addItemInteractionSource,
-                    onClick = {
-
-                    },
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.AddCircle,
-                        contentDescription = "Add Icon",
-                        tint = if (addItemPressedState.value) Color.Gray.copy(0.6f) else Color.White
-                    )
-                    Spacer(modifier = Modifier.padding(5.dp))
-                    Text(
-                        text = "Add Items", style = TextStyle(
-                            fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                            color = if (addItemPressedState.value) Color.Gray.copy(0.6f) else Color.White
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .drawBehind {
+                        drawRoundRect(
+                            color = Color.White,
+                            style = stroke,
+                            cornerRadius = CornerRadius(8.dp.toPx())
                         )
+                    },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                border = BorderStroke(0.dp, Color.Transparent),
+                interactionSource = addItemInteractionSource,
+                onClick = {
+
+                },
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = "Add Icon",
+                    tint = if (addItemPressedState.value) Color.Gray.copy(0.6f) else Color.White
+                )
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(
+                    text = "Add Items", style = TextStyle(
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                        color = if (addItemPressedState.value) Color.Gray.copy(0.6f) else Color.White
                     )
-                }
+                )
             }
+
 
             Text(
                 modifier = Modifier.padding(top = 30.dp),
@@ -302,14 +297,6 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
     }
 
 
-}
-
-private object DisabledRippleTheme : RippleTheme {
-    @Composable
-    override fun defaultColor(): Color = Color.Transparent
-
-    @Composable
-    override fun rippleAlpha(): RippleAlpha = RippleAlpha(0f, 0f, 0f, 0f)
 }
 
 @Composable

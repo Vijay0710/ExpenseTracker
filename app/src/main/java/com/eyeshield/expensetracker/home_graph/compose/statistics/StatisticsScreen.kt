@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,7 +81,7 @@ fun StatisticsScreen(navController: NavController) {
                         this.drawCircle(Color.White, radius = 40f)
                     }
                     .clickable(
-                        interactionSource = backIcon, indication = rememberRipple(
+                        interactionSource = backIcon, indication = ripple(
                             bounded = false,
                             radius = 12.dp,
                             color = Color.Gray.copy(0.5f)
@@ -109,7 +109,7 @@ fun StatisticsScreen(navController: NavController) {
                         this.drawCircle(Color.White, radius = 40f)
                     }
                     .clickable(
-                        interactionSource = backIcon, indication = rememberRipple(
+                        interactionSource = backIcon, indication = ripple(
                             bounded = false,
                             radius = 12.dp,
                             color = Color.Gray.copy(0.5f)
@@ -161,7 +161,7 @@ fun StatisticsScreen(navController: NavController) {
                         .clip(RoundedCornerShape(50f))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = rememberRipple(
+                            indication = ripple(
                                 bounded = true,
                             )
                         ) {

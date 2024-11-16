@@ -4,18 +4,17 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -26,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.NavigationExtensions.popUpToHomeScreen
 import com.eyeshield.expensetracker.add.AddScreen
@@ -49,44 +47,42 @@ fun BottomNavigation(mainNavController: NavController) {
         Screens.CardScreen,
         Screens.SettingsScreen
     )
+    var currentDestination by remember {
+        mutableStateOf<Screens>(Screens.HomeScreen)
+    }
 
     Scaffold(bottomBar = {
-        CompositionLocalProvider(
-            LocalRippleTheme provides ClearRippleTheme
-        ) {
-            NavigationBar(containerColor = Color.Transparent) {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                bottomNavItems.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        modifier = Modifier,
-                        selected = currentDestination?.route == item.route,
-                        onClick = {
-                            if(currentDestination?.route != item.route) {
-                                navController.navigate(item.route) {
-                                    popUpTo(item.route) {
-                                        inclusive = true
-                                    }
+        NavigationBar(containerColor = Color.Transparent) {
+            bottomNavItems.forEachIndexed { _, item ->
+                NavigationBarItem(
+                    modifier = Modifier,
+                    selected = currentDestination == item,
+                    onClick = {
+                        if (currentDestination != item) {
+                            navController.navigate(item) {
+                                popUpTo(item) {
+                                    inclusive = true
                                 }
                             }
-                        },
-                        icon = {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                painter = painterResource(id = item.icon),
-                                contentDescription = stringResource(id = item.resourceId)
-                            )
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = colorResource(id = R.color.shadow_white),
-                            selectedIconColor = Color.Black,
-                            unselectedIconColor = Color.Gray
-                        ),
-                    )
-                }
+                            currentDestination = item
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            painter = painterResource(id = item.icon),
+                            contentDescription = stringResource(id = item.resourceId)
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = colorResource(id = R.color.shadow_white),
+                        selectedIconColor = Color.Black,
+                        unselectedIconColor = Color.Gray
+                    ),
+                )
             }
         }
+
     }) { innerPadding ->
 
         NavHost(
@@ -94,12 +90,12 @@ fun BottomNavigation(mainNavController: NavController) {
                 .background(color = colorResource(id = R.color.shadow_white))
                 .padding(innerPadding),
             navController = navController,
-            startDestination = Screens.HomeScreen.route,
+            startDestination = Screens.HomeScreen,
         ) {
-            composable(Screens.HomeScreen.route) {
+            composable<Screens.HomeScreen> {
                 HomeScreen(mainNavController)
             }
-            composable(Screens.CalendarScreen.route) {
+            composable<Screens.CalendarScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
 
                 val transactionViewModel: TransactionViewModel = hiltViewModel()
@@ -117,31 +113,18 @@ fun BottomNavigation(mainNavController: NavController) {
                     mainNavController
                 )
             }
-            composable(Screens.AddScreen.route) {
+            composable<Screens.AddScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
                 AddScreen()
             }
-            composable(Screens.CardScreen.route) {
+            composable<Screens.CardScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
                 CardScreen()
             }
-            composable(Screens.SettingsScreen.route) {
+            composable<Screens.SettingsScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
                 SettingsScreen()
             }
         }
     }
-}
-
-object ClearRippleTheme : RippleTheme {
-    @Composable
-    override fun defaultColor(): Color = Color.Transparent
-
-    @Composable
-    override fun rippleAlpha() = RippleAlpha(
-        draggedAlpha = 0.0f,
-        focusedAlpha = 0.0f,
-        hoveredAlpha = 0.0f,
-        pressedAlpha = 0.0f,
-    )
 }

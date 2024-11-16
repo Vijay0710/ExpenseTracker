@@ -20,11 +20,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -227,7 +227,7 @@ fun CustomCalendar(
                             .padding(7.dp)
                             .clickable(
                                 interactionSource = interactionSource,
-                                indication = rememberRipple(bounded = false, radius = 15.dp),
+                                indication = ripple(bounded = false, radius = 15.dp),
                                 onClick = remember {
                                     {
                                         calendarData = calendarData.copy(selectedDay = item + 1)

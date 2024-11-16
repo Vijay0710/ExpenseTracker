@@ -28,9 +28,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -195,14 +195,14 @@ fun HomeScreen(mainNavController: NavController) {
                         drawCircle(Color.White, radius = 48f)
                     }
                     .clickable(
-                        interactionSource = interactionSource, indication = rememberRipple(
+                        interactionSource = interactionSource,
+                        indication = ripple(
                             bounded = false,
                             radius = 17.dp,
                             color = Color.Transparent
-                        )
-                    ) {
-
-                    },
+                        ),
+                        onClick = {}
+                    ),
                 painter = painterResource(id = R.drawable.notification),
                 contentDescription = "Notification",
                 tint = if (isPressed.value)
