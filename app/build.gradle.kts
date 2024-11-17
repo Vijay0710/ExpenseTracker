@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId = "com.eyeshield.expensetracker"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -82,7 +82,6 @@ dependencies {
 
     // Room DB
     implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
