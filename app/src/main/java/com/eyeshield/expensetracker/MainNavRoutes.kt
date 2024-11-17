@@ -1,10 +1,16 @@
 package com.eyeshield.expensetracker
 
-sealed class MainNavRoutes(val route: String) {
+import kotlinx.serialization.Serializable
 
-    data object BottomNavigation : MainNavRoutes("bottom_nav")
+@Serializable
+sealed class MainNavRoutes {
 
-    data object StatisticsScreen : MainNavRoutes("statistics")
+    @Serializable
+    data object BottomNavigation : MainNavRoutes()
 
-    data object AddExpenseScreen: MainNavRoutes("add_expense_screen")
+    @Serializable
+    data object StatisticsScreen : MainNavRoutes()
+
+    @Serializable
+    data object AddExpenseScreen : MainNavRoutes()
 }

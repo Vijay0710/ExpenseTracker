@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.home_graph.compose.home.HomeScreen
+import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 
 @Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)
 @Composable

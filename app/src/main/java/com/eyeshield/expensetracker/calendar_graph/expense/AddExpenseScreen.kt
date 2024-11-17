@@ -49,7 +49,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
-import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetails
+import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)

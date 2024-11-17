@@ -48,8 +48,8 @@ import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
 import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 import com.eyeshield.expensetracker.database.DatabaseStatus
-import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetails
-import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetailsShimmer
+import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
+import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetailsShimmer
 
 @Composable
 @Preview(showBackground = true)
@@ -114,16 +114,18 @@ fun CalendarScreen(
             .fillMaxSize()
             .padding(15.dp), contentAlignment = Alignment.BottomEnd
     ) {
-        Button(modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp),
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black.copy(0.9f)
             ),
             shape = RoundedCornerShape(50),
             onClick = {
-                mainNavController.navigate(MainNavRoutes.AddExpenseScreen.route)
-            }) {
+                mainNavController.navigate(MainNavRoutes.AddExpenseScreen)
+            }
+        ) {
             Text(
                 text = "Record a Expense", style = TextStyle(
                     fontFamily = FontFamily(Font(R.font.nunito_bold)),

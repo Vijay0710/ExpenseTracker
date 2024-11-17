@@ -6,13 +6,13 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.eyeshield.expensetracker.bottomnav.Screens
+import com.eyeshield.expensetracker.bottomnav.Tabs
 
 object NavigationExtensions {
 
     fun NavController.popUpToHomeScreen(
-        popRoute: Screens = Screens.HomeScreen,
-        route: Screens = Screens.HomeScreen
+        popRoute: Tabs = Tabs.HomeScreen,
+        route: Tabs = Tabs.HomeScreen
     ) {
         navigate(route) {
             popUpTo(popRoute) {

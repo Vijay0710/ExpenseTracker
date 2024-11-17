@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home_graph.compose.home.components
+package com.eyeshield.expensetracker.home_graph.home.components
 
 import android.graphics.PointF
 import android.view.HapticFeedbackConstants

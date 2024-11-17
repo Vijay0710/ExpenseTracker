@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home_graph.compose.home.components
+package com.eyeshield.expensetracker.home_graph.home.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

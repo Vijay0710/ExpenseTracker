@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home_graph.compose.home
+package com.eyeshield.expensetracker.home_graph.home
 
 
 import androidx.activity.compose.BackHandler
@@ -72,10 +72,10 @@ import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 import com.eyeshield.expensetracker.cards.data.CardInfo
-import com.eyeshield.expensetracker.home_graph.compose.home.components.CardFace
-import com.eyeshield.expensetracker.home_graph.compose.home.components.CreditCard
-import com.eyeshield.expensetracker.home_graph.compose.home.components.IncomeExpenseCard
-import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetails
+import com.eyeshield.expensetracker.home_graph.home.components.CardFace
+import com.eyeshield.expensetracker.home_graph.home.components.CreditCard
+import com.eyeshield.expensetracker.home_graph.home.components.IncomeExpenseCard
+import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
 import kotlinx.coroutines.delay
 
 @Composable
@@ -407,7 +407,7 @@ fun CreditCardContent(mainNavController: NavController) {
                         interactionSource = interactionSource,
                         indication = null
                     ) {
-                        mainNavController.navigate(MainNavRoutes.StatisticsScreen.route)
+                        mainNavController.navigate(MainNavRoutes.StatisticsScreen)
                     },
                 painter = painterResource(id = R.drawable.ic_more),
                 contentDescription = "More",

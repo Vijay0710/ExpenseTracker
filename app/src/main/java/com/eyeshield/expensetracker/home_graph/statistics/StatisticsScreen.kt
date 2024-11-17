@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.home_graph.compose.statistics
+package com.eyeshield.expensetracker.home_graph.statistics
 
 
 import androidx.compose.animation.animateColorAsState
@@ -45,8 +45,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
-import com.eyeshield.expensetracker.home_graph.compose.home.components.SmoothLineGraph
-import com.eyeshield.expensetracker.home_graph.compose.home.components.TransactionDetails
+import com.eyeshield.expensetracker.home_graph.home.components.SmoothLineGraph
+import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
 
 
 @Composable

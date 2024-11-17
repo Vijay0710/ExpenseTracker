@@ -5,16 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.eyeshield.expensetracker.bottomnav.BottomNavigation
 import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
-import com.eyeshield.expensetracker.home_graph.compose.statistics.StatisticsScreen
+import com.eyeshield.expensetracker.home_graph.statistics.StatisticsScreen
 import com.eyeshield.expensetracker.ui.theme.ExpenseTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,22 +30,20 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = MainNavRoutes.BottomNavigation.route
+                        startDestination = MainNavRoutes.BottomNavigation
                     ) {
-                        composable(MainNavRoutes.BottomNavigation.route) {
+                        composable<MainNavRoutes.BottomNavigation> {
                             BottomNavigation(navController)
                         }
 
-                        composable(
-                            MainNavRoutes.StatisticsScreen.route,
+                        composable<MainNavRoutes.StatisticsScreen>(
                             enterTransition = NavigationExtensions.slideIntoContainerFromRightToLeft(),
                             exitTransition = NavigationExtensions.slideIntoContainerFromLeftToRight()
                         ) {
                             StatisticsScreen(navController)
                         }
 
-                        composable(
-                            MainNavRoutes.AddExpenseScreen.route,
+                        composable<MainNavRoutes.AddExpenseScreen>(
                             enterTransition = NavigationExtensions.slideIntoContainerFromRightToLeft(),
                             exitTransition = NavigationExtensions.slideIntoContainerFromLeftToRight()
                         ) {
@@ -57,21 +53,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ExpenseTrackerTheme {
-        Greeting("Android")
     }
 }

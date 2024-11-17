@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker
+package com.eyeshield.expensetracker.bottomnav
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -27,12 +27,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.NavigationExtensions.popUpToHomeScreen
+import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.add.AddScreen
-import com.eyeshield.expensetracker.bottomnav.Screens
 import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
-import com.eyeshield.expensetracker.home_graph.compose.home.HomeScreen
+import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 import com.eyeshield.expensetracker.settings.SettingsScreen
 
 @Composable
@@ -42,16 +42,16 @@ fun BottomNavigation(mainNavController: NavController) {
 
     val bottomNavItems = remember {
         listOf(
-            Screens.HomeScreen,
-            Screens.CalendarScreen,
-            Screens.AddScreen,
-            Screens.CardScreen,
-            Screens.SettingsScreen
+            Tabs.HomeScreen,
+            Tabs.CalendarScreen,
+            Tabs.AddScreen,
+            Tabs.CardScreen,
+            Tabs.SettingsScreen
         )
     }
 
     var currentDestination by remember {
-        mutableStateOf<Screens>(Screens.HomeScreen)
+        mutableStateOf<Tabs>(Tabs.HomeScreen)
     }
 
     Scaffold(
@@ -93,12 +93,12 @@ fun BottomNavigation(mainNavController: NavController) {
                 .background(color = colorResource(id = R.color.shadow_white))
                 .padding(innerPadding),
             navController = navController,
-            startDestination = Screens.HomeScreen,
+            startDestination = Tabs.HomeScreen,
         ) {
-            composable<Screens.HomeScreen> {
+            composable<Tabs.HomeScreen> {
                 HomeScreen(mainNavController)
             }
-            composable<Screens.CalendarScreen> {
+            composable<Tabs.CalendarScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
 
                 val transactionViewModel: TransactionViewModel = hiltViewModel()
@@ -116,15 +116,15 @@ fun BottomNavigation(mainNavController: NavController) {
                     mainNavController
                 )
             }
-            composable<Screens.AddScreen> {
+            composable<Tabs.AddScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
                 AddScreen()
             }
-            composable<Screens.CardScreen> {
+            composable<Tabs.CardScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
                 CardScreen()
             }
-            composable<Screens.SettingsScreen> {
+            composable<Tabs.SettingsScreen> {
                 BackHandler { navController.popUpToHomeScreen() }
                 SettingsScreen()
             }
