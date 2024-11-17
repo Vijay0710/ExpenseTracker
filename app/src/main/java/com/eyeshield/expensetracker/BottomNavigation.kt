@@ -40,51 +40,54 @@ fun BottomNavigation(mainNavController: NavController) {
 
     val navController = rememberNavController()
 
-    val bottomNavItems = listOf(
-        Screens.HomeScreen,
-        Screens.CalendarScreen,
-        Screens.AddScreen,
-        Screens.CardScreen,
-        Screens.SettingsScreen
-    )
+    val bottomNavItems = remember {
+        listOf(
+            Screens.HomeScreen,
+            Screens.CalendarScreen,
+            Screens.AddScreen,
+            Screens.CardScreen,
+            Screens.SettingsScreen
+        )
+    }
+
     var currentDestination by remember {
         mutableStateOf<Screens>(Screens.HomeScreen)
     }
 
-    Scaffold(bottomBar = {
-        NavigationBar(containerColor = Color.Transparent) {
-            bottomNavItems.forEachIndexed { _, item ->
-                NavigationBarItem(
-                    modifier = Modifier,
-                    selected = currentDestination == item,
-                    onClick = {
-                        if (currentDestination != item) {
-                            navController.navigate(item) {
-                                popUpTo(item) {
-                                    inclusive = true
+    Scaffold(
+        bottomBar = {
+            NavigationBar(containerColor = Color.Transparent) {
+                bottomNavItems.forEachIndexed { _, item ->
+                    NavigationBarItem(
+                        modifier = Modifier,
+                        selected = currentDestination == item,
+                        onClick = {
+                            if (currentDestination != item) {
+                                navController.navigate(item) {
+                                    popUpTo(item) {
+                                        inclusive = true
+                                    }
                                 }
+                                currentDestination = item
                             }
-                            currentDestination = item
-                        }
-                    },
-                    icon = {
-                        Icon(
-                            modifier = Modifier.size(20.dp),
-                            painter = painterResource(id = item.icon),
-                            contentDescription = stringResource(id = item.resourceId)
+                        },
+                        icon = {
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(id = item.icon),
+                                contentDescription = stringResource(id = item.resourceId)
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = colorResource(id = R.color.shadow_white),
+                            selectedIconColor = Color.Black,
+                            unselectedIconColor = Color.Gray
                         )
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = colorResource(id = R.color.shadow_white),
-                        selectedIconColor = Color.Black,
-                        unselectedIconColor = Color.Gray
-                    ),
-                )
+                    )
+                }
             }
         }
-
-    }) { innerPadding ->
-
+    ) { innerPadding ->
         NavHost(
             modifier = Modifier
                 .background(color = colorResource(id = R.color.shadow_white))

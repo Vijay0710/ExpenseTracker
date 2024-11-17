@@ -1,6 +1,9 @@
 package com.eyeshield.expensetracker.home_graph.compose.statistics
 
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,8 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,16 +55,9 @@ fun StatisticsScreen(navController: NavController) {
     val items = listOf("Week", "Month", "Year")
     val statisticsBackgroundColor = colorResource(id = R.color.statistics_segmented_button_bg)
 
-    val selectedSegment = remember { mutableStateOf(items[1]) }
-    val selectedSegmentBackgroundModifier = remember {
-        Modifier
-            .background(
-                statisticsBackgroundColor,
-                shape = RoundedCornerShape(50)
-            )
+    var selectedIndex by remember {
+        mutableIntStateOf(0)
     }
-
-
 
     Column(
         modifier = Modifier
@@ -109,14 +107,14 @@ fun StatisticsScreen(navController: NavController) {
                         this.drawCircle(Color.White, radius = 40f)
                     }
                     .clickable(
-                        interactionSource = backIcon, indication = ripple(
+                        interactionSource = backIcon,
+                        indication = ripple(
                             bounded = false,
                             radius = 12.dp,
                             color = Color.Gray.copy(0.5f)
-                        )
-                    ) {
-                        navController.popBackStack()
-                    },
+                        ),
+                        onClick = { navController.popBackStack() }
+                    ),
                 painter = painterResource(id = R.drawable.ic_share),
                 contentDescription = "Back"
             )
@@ -155,26 +153,39 @@ fun StatisticsScreen(navController: NavController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             repeat(3) {
+                val animateSelectedSegmentColor = animateColorAsState(
+                    targetValue = if (selectedIndex == it) statisticsBackgroundColor else Color.Transparent,
+                    animationSpec = tween(
+                        easing = FastOutLinearInEasing,
+                        durationMillis = 500,
+                        delayMillis = 100 * it
+                    ),
+                    label = "Selected Segment Animation"
+                )
+
                 Spacer(modifier = Modifier.padding(vertical = 20.dp))
+
                 Text(
                     modifier = Modifier
                         .clip(RoundedCornerShape(50f))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = ripple(
-                                bounded = true,
-                            )
-                        ) {
-                            selectedSegment.value = items[it]
-                        }
-                        .then(if (selectedSegment.value == items[it]) selectedSegmentBackgroundModifier else Modifier)
+                            indication = ripple(bounded = true),
+                            onClick = {
+                                selectedIndex = it
+                            }
+                        )
+                        .background(
+                            color = animateSelectedSegmentColor.value,
+                            shape = RoundedCornerShape(50)
+                        )
                         .padding(horizontal = 20.dp, vertical = 4.dp),
                     text = items[it],
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.nunito_semi_bold))
                     ),
-                    color = if (selectedSegment.value == items[it]) colorResource(R.color.white) else colorResource(
+                    color = if (selectedIndex == it) colorResource(R.color.white) else colorResource(
                         id = R.color.statistics_date
                     )
                 )

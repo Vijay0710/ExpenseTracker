@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,13 +57,16 @@ import kotlinx.coroutines.launch
 @Preview
 fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
     val pagerState = rememberPagerState(
+        initialPage = 1,
         pageCount = { 12 }
     )
-    val context = LocalContext.current
-
-
     val scope = rememberCoroutineScope()
-    val (currentMonth, setCurrentMonth) = remember { mutableIntStateOf(CalendarUtils.getCurrentMonth()) }
+    val (currentMonth, setCurrentMonth) = remember {
+        mutableIntStateOf(CalendarUtils.getCurrentMonth())
+    }
+    var currentPage by remember {
+        mutableIntStateOf(pagerState.currentPage)
+    }
     val monthAndYear = remember { mutableStateOf(CalendarUtils.getMonthAndYear(currentMonth)) }
 
     LaunchedEffect(key1 = currentMonth) {
@@ -98,41 +100,52 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                             color = colorResource(id = R.color.carbon_blue)
                         )
                     )
-                    IconButton(onClick = {
-                        scope.launch {
-                            pagerState.animateScrollToPage(
-                                page = pagerState.currentPage - 1,
-                                animationSpec = tween(600, easing = LinearOutSlowInEasing),
-                            )
-                        }
-                        setCurrentMonth(currentMonth - 1)
-                    }) {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(
+                                    page = pagerState.currentPage - 1,
+                                    animationSpec = tween(600, easing = LinearOutSlowInEasing),
+                                )
+                            }
+                            currentPage -= 1
+                            setCurrentMonth(currentMonth - 1)
+                        },
+                        enabled = currentPage > 1
+                    ) {
                         Icon(
-                            Icons.Default.ChevronLeft,
+                            imageVector = Icons.Default.ChevronLeft,
                             contentDescription = "Left Icon",
-                            tint = colorResource(
-                                id = R.color.carbon_blue
-                            )
+                            tint = if (currentPage > 1)
+                                colorResource(id = R.color.carbon_blue)
+                            else
+                                colorResource(id = R.color.carbon_blue).copy(0.5f)
                         )
                     }
 
-                    IconButton(onClick = {
-                        scope.launch {
-                            if (pagerState.pageCount != pagerState.currentPage) {
-                                pagerState.animateScrollToPage(
-                                    page = pagerState.currentPage + 1,
-                                    animationSpec = tween(600, easing = LinearOutSlowInEasing)
-                                )
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                if (pagerState.pageCount != pagerState.currentPage) {
+                                    pagerState.animateScrollToPage(
+                                        page = pagerState.currentPage + 1,
+                                        animationSpec = tween(600, easing = LinearOutSlowInEasing)
+                                    )
+                                }
                             }
-                        }
-                        setCurrentMonth(currentMonth + 1)
-                    }) {
+                            setCurrentMonth(currentMonth + 1)
+                            currentPage += 1
+                        },
+                        enabled = currentPage != pagerState.pageCount
+                    ) {
                         Icon(
-                            Icons.Default.ChevronRight,
+                            imageVector = Icons.Default.ChevronRight,
                             contentDescription = "Left Icon",
-                            tint = colorResource(
-                                id = R.color.carbon_blue
-                            )
+                            tint =
+                            if (currentPage != pagerState.pageCount)
+                                colorResource(id = R.color.carbon_blue)
+                            else
+                                colorResource(id = R.color.carbon_blue).copy(0.5f)
                         )
                     }
                 }
