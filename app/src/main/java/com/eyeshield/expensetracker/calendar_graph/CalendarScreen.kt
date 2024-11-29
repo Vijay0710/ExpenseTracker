@@ -41,10 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
 import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 import com.eyeshield.expensetracker.database.DatabaseStatus
@@ -52,21 +50,19 @@ import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetail
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetailsShimmer
 
 @Composable
-@Preview(showBackground = true)
 fun CalendarScreen(
-    onAddTransaction: ((TransactionData) -> Unit)? = null,
-    getAllTransactions: List<TransactionData>? = listOf(),
-    databaseStatus: DatabaseStatus = DatabaseStatus.LOADING,
-    mainNavController: NavController = rememberNavController()
+    getAllTransactions: List<TransactionData>?,
+    databaseStatus: DatabaseStatus,
+    onNavigate: (MainNavRoutes) -> Unit
 ) {
 
     val items = remember(getAllTransactions) {
         mutableStateListOf<TransactionData>().apply {
             if (getAllTransactions?.isNotEmpty() == true)
-                this.add(getAllTransactions[0])
+                add(getAllTransactions[0])
             else {
                 getAllTransactions?.map {
-                    this.add(it)
+                    add(it)
                 }
             }
         }
@@ -123,7 +119,7 @@ fun CalendarScreen(
             ),
             shape = RoundedCornerShape(50),
             onClick = {
-                mainNavController.navigate(MainNavRoutes.AddExpenseScreen)
+                onNavigate(MainNavRoutes.AddExpenseScreen)
             }
         ) {
             Text(
@@ -145,9 +141,9 @@ fun Modifier.shimmerLoadingAnimation(
     return composed {
         var size by remember { mutableStateOf(IntSize.Zero) }
         val shimmerColors = listOf(
-            Color(0xFFB8B5B5),
-            Color(0xFF8F8B8B),
-            Color(0xFFB8B5B5)
+            Color(0xFFEDE9E9), // Light Gray
+            Color(0xFFE0E0E0), // Medium Gray
+            Color(0xFFEDE9E9)  // Light Gray
         )
 
         val transition = rememberInfiniteTransition(label = "")
@@ -179,4 +175,25 @@ fun Modifier.shimmerLoadingAnimation(
                 size = it.size
             }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewCalendarScreen() {
+    CalendarScreen(
+        getAllTransactions = listOf(
+            TransactionData(
+                expenseId = "1",
+                expenseResourceID = R.drawable.google_play,
+                expenseName = "Clash Of Clans - Gold Pass",
+                expenseDate = "21/11/2024",
+                expenseAmount = "10$"
+            )
+        ),
+        databaseStatus = DatabaseStatus.LOADING,
+        onNavigate = {
+            // Preview
+        }
+    )
 }

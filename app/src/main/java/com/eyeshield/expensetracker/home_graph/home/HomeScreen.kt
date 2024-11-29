@@ -66,10 +66,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.eyeshield.expensetracker.MainNavRoutes
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 import com.eyeshield.expensetracker.cards.data.CardInfo
 import com.eyeshield.expensetracker.home_graph.home.components.CardFace
@@ -79,7 +77,9 @@ import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetail
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen(mainNavController: NavController) {
+fun HomeScreen(
+    onNavigate: (MainNavRoutes) -> Unit
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     val showLogOutDialog = remember { mutableStateOf(false) }
@@ -277,7 +277,9 @@ fun HomeScreen(mainNavController: NavController) {
                             }
                         },
                         front = {
-                            CreditCardContent(mainNavController)
+                            CreditCardContent(
+                                onNavigate = onNavigate
+                            )
                         },
                         back = {
 
@@ -380,7 +382,7 @@ fun Transactions() {
 
 
 @Composable
-fun CreditCardContent(mainNavController: NavController) {
+fun CreditCardContent(onNavigate: (MainNavRoutes) -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
 
@@ -407,7 +409,7 @@ fun CreditCardContent(mainNavController: NavController) {
                         interactionSource = interactionSource,
                         indication = null
                     ) {
-                        mainNavController.navigate(MainNavRoutes.StatisticsScreen)
+                        onNavigate(MainNavRoutes.StatisticsScreen)
                     },
                 painter = painterResource(id = R.drawable.ic_more),
                 contentDescription = "More",
@@ -510,5 +512,9 @@ fun RowScope.RadialGradientLinearProgressIndicator(
 @Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(mainNavController = rememberNavController())
+    HomeScreen(
+        onNavigate = {
+            // Preview
+        }
+    )
 }

@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker
+package com.eyeshield.expensetracker.application
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
