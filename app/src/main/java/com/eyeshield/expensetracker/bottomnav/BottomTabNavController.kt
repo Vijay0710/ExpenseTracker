@@ -1,14 +1,9 @@
 package com.eyeshield.expensetracker.bottomnav
 
 import android.content.Context
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.navigation.NavBackStackEntry
 import com.eyeshield.expensetracker.components.CustomNavHostController
 
 class BottomTabNavController(context: Context) : CustomNavHostController(context) {
@@ -39,20 +34,5 @@ class BottomTabNavController(context: Context) : CustomNavHostController(context
 
     private fun updateBottomTabCurrentDestination(destination: Tabs) {
         bottomTabCurrentDestination = destination
-    }
-}
-
-object NavigationExtensions {
-
-    fun slideIntoContainerFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) {
-        return {
-            slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
-        }
-    }
-
-    fun slideIntoContainerFromLeftToRight(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
-        return {
-            slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(500))
-        }
     }
 }

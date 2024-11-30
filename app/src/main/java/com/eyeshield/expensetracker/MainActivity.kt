@@ -9,13 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.application.ApplicationNavController
 import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.bottomnav.BottomNavigation
-import com.eyeshield.expensetracker.bottomnav.NavigationExtensions
 import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.components.rememberCustomNavController
+import com.eyeshield.expensetracker.extensions.fadeOutExitTransition
+import com.eyeshield.expensetracker.extensions.slideIntoContainerFromLeftToRight
+import com.eyeshield.expensetracker.extensions.slideIntoContainerFromRightToLeft
 import com.eyeshield.expensetracker.home_graph.statistics.StatisticsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            rememberNavController()
+
             val navController = rememberCustomNavController<ApplicationNavController>()
 
             Surface(
@@ -35,20 +36,22 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = MainNavRoutes.BottomNavigation
                 ) {
-                    composable<MainNavRoutes.BottomNavigation> {
+                    composable<MainNavRoutes.BottomNavigation>(
+                        exitTransition = fadeOutExitTransition()
+                    ) {
                         BottomNavigation(navController)
                     }
 
                     composable<MainNavRoutes.StatisticsScreen>(
-                        enterTransition = NavigationExtensions.slideIntoContainerFromRightToLeft(),
-                        exitTransition = NavigationExtensions.slideIntoContainerFromLeftToRight()
+                        enterTransition = slideIntoContainerFromRightToLeft(),
+                        exitTransition = slideIntoContainerFromLeftToRight()
                     ) {
                         StatisticsScreen(navController)
                     }
 
                     composable<MainNavRoutes.AddExpenseScreen>(
-                        enterTransition = NavigationExtensions.slideIntoContainerFromRightToLeft(),
-                        exitTransition = NavigationExtensions.slideIntoContainerFromLeftToRight()
+                        enterTransition = slideIntoContainerFromRightToLeft(),
+                        exitTransition = slideIntoContainerFromLeftToRight()
                     ) {
                         AddExpenseScreen(navController)
                     }
