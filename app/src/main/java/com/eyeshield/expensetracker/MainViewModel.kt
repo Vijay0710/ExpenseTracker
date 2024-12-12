@@ -55,9 +55,11 @@ class MainViewModel @Inject constructor(
             }
 
             is ApiResult.ApiError -> {
+                sessionStorage
                 _uiEvent.send(
                     UIEvent.OnVerifyTokenFailure
                 )
+                sessionStorage.clear()
             }
         }
 

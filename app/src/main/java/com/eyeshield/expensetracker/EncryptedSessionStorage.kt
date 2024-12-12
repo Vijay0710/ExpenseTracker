@@ -41,6 +41,12 @@ class EncryptedSessionStorage @Inject constructor(
         }
     }
 
+    suspend fun clear() {
+        withContext(Dispatchers.IO) {
+            sharedPreferences.edit().clear().commit()
+        }
+    }
+
     companion object {
         private const val AUTH_KEY = "AUTH_INFO"
     }
