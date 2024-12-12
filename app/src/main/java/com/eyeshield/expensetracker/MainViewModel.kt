@@ -32,11 +32,22 @@ class MainViewModel @Inject constructor(
             state = state.copy(
                 isCheckingAuth = true
             )
-            validateAccessToken()
+
+            // Where there is no data in sessionStorage avoid validateRefreshToken call and instead we tell user to login again
+            if (sessionStorage.get() != null) {
+                validateRefreshToken()
+            } else {
+                _uiEvent.send(
+                    UIEvent.OnVerifyTokenFailure
+                )
+                state = state.copy(
+                    isCheckingAuth = false
+                )
+            }
         }
     }
 
-    private suspend fun validateAccessToken() {
+    private suspend fun validateRefreshToken() {
         val result = client.post<AccessTokenRequest, AccessTokenResponse>(
             route = "/auth/verify_token",
             body = AccessTokenRequest(
