@@ -8,4 +8,15 @@
     <string name="add">Add</string>
     <string name="settings">Settings</string>
 
+    <!-- Login Screen -->
+    <string name="login_title">Login</string>
+    <string name="email_text_field_title">Email</string>
+    <string name="email_text_field_hint">test@assimilate.cloud</string>
+
+    <string name="password_text_field_hint">Password</string>
+    <string name="password_text_field_title">Password</string>
+
+    <string name="login_button_title">Login</string>
+    <string name="login_screen_error">Oops something bad happened from our end! We are working on it.</string>
+
 </resources>

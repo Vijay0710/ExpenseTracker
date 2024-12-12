@@ -1,6 +1,5 @@
 package com.eyeshield.expensetracker.calendar_graph
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,17 +7,21 @@ import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 import com.eyeshield.expensetracker.dao.TransactionDao
 import com.eyeshield.expensetracker.database.DatabaseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
-class TransactionViewModel @Inject constructor(private val transactionDao: TransactionDao) :
-    ViewModel() {
+class TransactionViewModel @Inject constructor(
+    private val transactionDao: TransactionDao,
+    private val client: HttpClient
+) : ViewModel() {
     var databaseResult = mutableStateOf<DatabaseResult<List<TransactionData>>?>(null)
 
     fun recordATransaction(item: TransactionData) {
@@ -27,7 +30,6 @@ class TransactionViewModel @Inject constructor(private val transactionDao: Trans
                 transactionDao.recordATransaction(item)
             } catch (e: Exception) {
                 coroutineContext.ensureActive()
-                Log.d("VIJ07", e.toString())
             }
         }
     }
@@ -47,7 +49,7 @@ class TransactionViewModel @Inject constructor(private val transactionDao: Trans
             // Propagates Cancellation exception if any to upwards
             coroutineContext.ensureActive()
             databaseResult.value = DatabaseResult.Error(e)
-            Log.d("VIJ07", e.toString())
+            Timber.tag("VIJ07").d(e.toString())
             null
         }
     }

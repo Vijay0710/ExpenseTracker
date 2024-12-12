@@ -22,6 +22,20 @@
 
     <!--  Common  -->
     <color name="income_or_expense_text">#434343</color>
+    <color name="text_field_background">#1D2025</color>
+    <color name="text_field_unfocused_border">#ABA5A5</color>
+    <color name="button_container_color">@color/white</color>
+    <color name="button_content_color">@color/black</color>
+
+    <!-- Login Screen -->
+    <color name="login_screen_background">#1D2025</color>
+    <color name="login_screen_blur_circle_color_1">#D82E2B</color>
+    <color name="login_screen_blur_circle_color_2">#EAA240</color>
+    <color name="login_surface_background">#0F0D0D</color>
+    <color name="login_surface_ambient_shadow_color">#8A8484</color>
+    <color name="login_surface_stroke">#8A8484</color>
+    <color name="login_screen_title">@color/white</color>
+    <color name="login_screen_error_content">@color/white</color>
 
     <!-- Expense Card Color References -->
     <color name="expense_icon">#FF9902</color>

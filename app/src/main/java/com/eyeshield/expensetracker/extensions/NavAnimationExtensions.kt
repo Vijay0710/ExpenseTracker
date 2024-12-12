@@ -20,6 +20,18 @@ fun slideIntoContainerFromLeftToRight(): (AnimatedContentTransitionScope<NavBack
     }
 }
 
+fun slideOutOfContainerFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
+    return {
+        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(400))
+    }
+}
+
+fun noExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
+    return {
+        ExitTransition.None
+    }
+}
+
 fun fadeOutExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
     return {
         fadeOut(animationSpec = tween(400, easing = FastOutLinearInEasing))

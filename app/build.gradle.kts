@@ -29,6 +29,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -36,6 +40,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", "\"https://eyeshield.assimilate.cloud\"")
+            buildConfigField("String", "API_VALIDATION_KEY", "\"dmlqYXk6QHZpamF5KjcvMA==\"")
+        }
+
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://eyeshield.assimilate.cloud\"")
+            buildConfigField("String", "API_VALIDATION_KEY", "\"dmlqYXk6QHZpamF5KjcvMA==\"")
         }
     }
     compileOptions {
@@ -51,6 +62,10 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/kotlinx-io.kotlin_module"
+            excludes += "META-INF/atomicfu.kotlin_module"
+            excludes += "META-INF/kotlinx-coroutines-io.kotlin_module"
+            excludes += "META-INF/kotlinx-coroutines-core.kotlin_module"
         }
     }
 }
@@ -84,6 +99,23 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    //Ktor
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.auth)
+    implementation(libs.ktor.client.logging)
+
+    //Encrypted Shared Prefs
+    implementation(libs.encrypted.shared.prefs)
+
+    //Logging
+    implementation(libs.timber)
+
+    //Splash Screen
+    implementation(libs.androidx.core.splashscreen)
 
     // Hilt Dependency Injection
     implementation(libs.hilt.android)

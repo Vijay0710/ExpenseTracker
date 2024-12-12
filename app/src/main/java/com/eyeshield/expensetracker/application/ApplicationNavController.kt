@@ -18,6 +18,19 @@ class ApplicationNavController(context: Context) : CustomNavHostController(conte
         }
     }
 
+
+    fun navigateToSingleTopAndPopAllScreens(route: MainNavRoutes) {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastNavigationTime >= NAVIGATION_DELAY) {
+            lastNavigationTime = currentTime
+            navigate(route) {
+                popUpTo(0) {
+                    inclusive = true
+                }
+            }
+        }
+    }
+
     companion object {
         private const val NAVIGATION_DELAY = 300L
     }

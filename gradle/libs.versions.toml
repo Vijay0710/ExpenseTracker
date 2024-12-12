@@ -21,6 +21,11 @@ roomPlugin = "2.6.1"
 hiltAndroidPlugin = "2.48.1"
 kotlinPluginSerialization = "2.0.21"
 kotlinPluginCompose = "2.0.21"
+ktor = "3.0.1"
+ktorClientLogging = "3.0.1"
+encryptedSharedPref = "1.0.0"
+timber = "5.0.1"
+coreSplashscreen = "1.0.1"
 
 
 [libraries]
@@ -50,6 +55,23 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+
+#Ktor Libraries
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+#Encrypted Shared Prefs
+encrypted-shared-prefs = { module = "androidx.security:security-crypto", version.ref = "encryptedSharedPref" }
+
+#Logging Lib
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+#Splash Screen Lib
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 
 # Unit Test and Feature Test
 junit = { group = "junit", name = "junit", version.ref = "junit" }
