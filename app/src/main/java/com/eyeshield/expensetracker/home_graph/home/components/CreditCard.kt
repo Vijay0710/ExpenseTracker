@@ -4,19 +4,23 @@ package com.eyeshield.expensetracker.home_graph.home.components
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,11 +53,18 @@ enum class CardFace(val angle: Float) {
 @Composable
 fun CreditCard(
     modifier: Modifier = Modifier,
+    cardBoxModifier: Modifier = Modifier,
     cardContainerColor: Color = colorResource(R.color.graphite_gray),
     cardFace: CardFace,
+    borderStroke: BorderStroke? = null,
     onClick: (CardFace) -> Unit,
     front: @Composable () -> Unit,
-    back: @Composable () -> Unit
+    back: @Composable () -> Unit,
+    shouldShowCircles: Boolean = true,
+    internalPaddingValues: PaddingValues = PaddingValues(0.dp),
+    cardElevation: CardElevation = CardDefaults.cardElevation(
+        defaultElevation = 24.dp
+    )
 ) {
 
     val rotation = animateFloatAsState(
@@ -78,20 +89,26 @@ fun CreditCard(
             .graphicsLayer {
                 rotationY = -(rotation.value)
                 cameraDistance = 30f
-            },
+            }
+            .padding(internalPaddingValues),
         colors = CardDefaults.cardColors(
             containerColor = cardContainerColor
         ),
         shape = RoundedCornerShape(30.dp),
-        elevation = CardDefaults.cardElevation(24.dp)
+        elevation = cardElevation,
+        border = borderStroke
     ) {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .graphicsLayer {
-                if (rotation.value > 90f) rotationY = 180f
-            }
+        Box(
+            modifier = cardBoxModifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    if (rotation.value > 90f) rotationY = 180f
+                }
         ) {
-            CardCornerCircles(rotation = rotation.value)
+
+            if (shouldShowCircles) {
+                CardCornerCircles(rotation = rotation.value)
+            }
 
             if (rotation.value <= 90f)
                 front.invoke()

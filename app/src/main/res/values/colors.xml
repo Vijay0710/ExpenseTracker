@@ -27,6 +27,12 @@
     <color name="button_container_color">@color/white</color>
     <color name="button_content_color">@color/black</color>
 
+    <!-- Welcome Screen -->
+    <color name="welcome_screen_card_container_color">#0F0D0D</color>
+    <color name="welcome_screen_card_border">#333131</color>
+    <color name="welcome_screen_my_wallet_placeholder">#ABA5A5</color>
+    <color name="welcome_screen_expense_tracker_description">#C2B9B9</color>
+
     <!-- Login Screen -->
     <color name="login_screen_background">#1D2025</color>
     <color name="login_screen_blur_circle_color_1">#D82E2B</color>

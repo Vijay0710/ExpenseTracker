@@ -137,14 +137,15 @@ fun CalendarScreen(
 
 fun Modifier.shimmerLoadingAnimation(
     durationMillis: Int = 1000,
+    shape: RoundedCornerShape = RoundedCornerShape(0.dp),
+    shimmerColors: List<Color> = listOf(
+        Color(0xCCEDE9E9), // Light Gray
+        Color(0xFFE0E0E0), // Medium Gray
+        Color(0xCCEDE9E9)  // Light Gray
+    )
 ): Modifier {
     return composed {
         var size by remember { mutableStateOf(IntSize.Zero) }
-        val shimmerColors = listOf(
-            Color(0xFFEDE9E9), // Light Gray
-            Color(0xFFE0E0E0), // Medium Gray
-            Color(0xFFEDE9E9)  // Light Gray
-        )
 
         val transition = rememberInfiniteTransition(label = "")
 
@@ -170,6 +171,7 @@ fun Modifier.shimmerLoadingAnimation(
                         y = size.height.toFloat()
                     ),
                 ),
+                shape = shape
             )
             .onGloballyPositioned {
                 size = it.size

@@ -1,6 +1,5 @@
 package com.eyeshield.expensetracker.common
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,13 +21,13 @@ import com.eyeshield.expensetracker.R
 fun CommonButton(
     title: String,
     modifier: Modifier = Modifier,
+    textModifier: Modifier = Modifier,
     enabled: Boolean = false,
     shouldShowLoader: Boolean = false,
     onClick: () -> Unit
 ) {
     Button(
         modifier = Modifier
-            .fillMaxWidth()
             .then(modifier),
         onClick = onClick,
         shape = RoundedCornerShape(40.dp),
@@ -44,7 +43,7 @@ fun CommonButton(
             DotsPulsing()
         } else {
             Text(
-                modifier = Modifier,
+                modifier = textModifier,
                 text = title,
                 style = TextStyle(
                     fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),

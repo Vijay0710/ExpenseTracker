@@ -18,5 +18,6 @@
 
     <string name="login_button_title">Login</string>
     <string name="login_screen_error">Oops something bad happened from our end! We are working on it.</string>
+    <string name="welcome_screen_next_cta">Next</string>
 
 </resources>

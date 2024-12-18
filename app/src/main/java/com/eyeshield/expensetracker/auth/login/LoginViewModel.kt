@@ -112,8 +112,6 @@ class LoginViewModel @Inject constructor(
                             )
                         }
                     }
-
-                    eventChannel.send(UiEvent.OnLoginFailure)
                 }
             }
 
@@ -154,6 +152,5 @@ class LoginViewModel @Inject constructor(
 
     sealed interface UiEvent {
         data object OnLoginSuccess : UiEvent
-        data object OnLoginFailure : UiEvent
     }
 }

@@ -71,7 +71,7 @@ class HttpClientFactory @Inject constructor(
                         !endpoint.contains(
                             "/auth/token",
                             ignoreCase = true
-                        ) && !endpoint.contains("/auth/verify_token", ignoreCase = true)
+                        ) || !endpoint.contains("/auth/verify_token", ignoreCase = true)
                     }
 
                     refreshTokens {

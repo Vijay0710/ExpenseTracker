@@ -5,24 +5,40 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavBackStackEntry
 
-fun slideIntoContainerFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) {
+fun slideInFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) {
     return {
-        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(500))
+        slideInHorizontally(
+            animationSpec = tween(
+                durationMillis = 500
+            )
+        ) { fullWidth ->
+            fullWidth
+        } +
+                fadeIn(
+                    animationSpec = tween(durationMillis = 500)
+                )
     }
 }
 
-fun slideIntoContainerFromLeftToRight(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
+fun slideOutFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
     return {
-        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right, tween(500))
-    }
-}
-
-fun slideOutOfContainerFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
-    return {
-        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Left, tween(400))
+        slideOutHorizontally(
+            animationSpec = tween(
+                durationMillis = 500
+            )
+        ) { fullWidth ->
+            fullWidth
+        } + fadeOut(
+            animationSpec = tween(durationMillis = 500)
+        )
     }
 }
 
@@ -32,8 +48,44 @@ fun noExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
     }
 }
 
-fun fadeOutExitTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
+fun noEnterTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) {
     return {
-        fadeOut(animationSpec = tween(400, easing = FastOutLinearInEasing))
+        EnterTransition.None
+    }
+}
+
+fun fadeAndZoomOutTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) {
+    return {
+        fadeOut(
+            animationSpec = tween(
+                durationMillis = 500,
+                easing = FastOutLinearInEasing
+            )
+        ) +
+                scaleOut(
+                    targetScale = 0.55f,
+                    animationSpec = tween(
+                        durationMillis = 1000,
+                        easing = FastOutLinearInEasing
+                    )
+                )
+    }
+}
+
+fun fadeAndZoomInTransition(): (AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) {
+    return {
+        fadeIn(
+            animationSpec = tween(
+                durationMillis = 500,
+                easing = FastOutLinearInEasing
+            )
+        ) +
+                scaleIn(
+                    initialScale = 0.95f,
+                    animationSpec = tween(
+                        durationMillis = 500,
+                        easing = FastOutLinearInEasing
+                    ),
+                )
     }
 }
