@@ -62,7 +62,7 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.record_expense_bg))
+            .background(colorResource(id = R.color.login_screen_background))
             .verticalScroll(rememberScrollState())
     ) {
         Column(
@@ -78,10 +78,7 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(30.dp)
-                        .drawBehind {
-                            this.drawCircle(Color.White, radius = 40f)
-                        }
+                        .size(40.dp)
                         .clickable(
                             interactionSource = backIconInteractionSource,
                             indication = ripple(
@@ -94,7 +91,7 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
                         },
                     painter = painterResource(id = R.drawable.ic_arrow_left),
                     contentDescription = "Back",
-                    tint = Color.Unspecified
+                    tint = colorResource(R.color.white)
                 )
 
                 Text(
@@ -108,10 +105,7 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
 
                 Icon(
                     modifier = Modifier
-                        .size(15.dp)
-                        .drawBehind {
-                            this.drawCircle(Color.White, radius = 40f)
-                        }
+                        .size(24.dp)
                         .clickable(
                             interactionSource = backIconInteractionSource,
                             indication = ripple(
@@ -123,7 +117,8 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
                             navController.popBackStack()
                         },
                     painter = painterResource(id = R.drawable.ic_share),
-                    contentDescription = "Back"
+                    contentDescription = "Back",
+                    tint = colorResource(R.color.white)
                 )
             }
 
@@ -225,7 +220,11 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
 
             Spacer(modifier = Modifier.padding(top = 20.dp))
 
-            Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp)) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
+                color = colorResource(R.color.white)
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -275,15 +274,15 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
                     )
                 }
 
-                Button(modifier = Modifier
-
-                    .height(55.dp),
+                Button(
+                    modifier = Modifier
+                        .height(55.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black.copy(0.9f)
+                        containerColor = colorResource(R.color.login_screen_background)
                     ),
                     shape = RoundedCornerShape(50),
-                    onClick = {
-                    }) {
+                    onClick = {}
+                ) {
                     Text(
                         text = "Save Invoice", style = TextStyle(
                             fontFamily = FontFamily(Font(R.font.nunito_bold)),
