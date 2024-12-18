@@ -19,7 +19,7 @@ sealed interface MainNavRoutes {
 }
 
 
-sealed interface AuthRoutes {
+sealed interface AuthRoutes : MainNavRoutes {
 
     @Serializable
     data object WelcomeScreen : AuthRoutes

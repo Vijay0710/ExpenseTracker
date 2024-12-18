@@ -3,10 +3,13 @@ package com.eyeshield.expensetracker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,30 +30,38 @@ import com.eyeshield.expensetracker.bottomnav.BottomNavigation
 import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.common.ObserveAsEvents
 import com.eyeshield.expensetracker.components.rememberCustomNavController
-import com.eyeshield.expensetracker.extensions.fadeOutExitTransition
-import com.eyeshield.expensetracker.extensions.noExitTransition
-import com.eyeshield.expensetracker.extensions.slideIntoContainerFromLeftToRight
-import com.eyeshield.expensetracker.extensions.slideIntoContainerFromRightToLeft
-import com.eyeshield.expensetracker.extensions.slideOutOfContainerFromRightToLeft
+import com.eyeshield.expensetracker.extensions.fadeAndZoomInTransition
+import com.eyeshield.expensetracker.extensions.fadeAndZoomOutTransition
+import com.eyeshield.expensetracker.extensions.slideInFromRightToLeft
+import com.eyeshield.expensetracker.extensions.slideOutFromRightToLeft
 import com.eyeshield.expensetracker.home_graph.statistics.StatisticsScreen
+import com.eyeshield.expensetracker.utils.setStatusBarIconsColorToDark
+import com.eyeshield.expensetracker.welcome.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.ExperimentalSerializationApi
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel>()
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 viewModel.state.isCheckingAuth
             }
         }
 
+        enableEdgeToEdge()
+        setStatusBarIconsColorToDark(false)
+
         setContent {
 
             val navController = rememberCustomNavController<ApplicationNavController>()
             var startDestination by remember { mutableStateOf<MainNavRoutes>(MainNavRoutes.AuthRoute) }
+            var surfaceBackGround by remember { mutableIntStateOf(R.color.login_screen_background) }
 
             ObserveAsEvents(viewModel.uiEvent) { event ->
                 startDestination = when (event) {
@@ -64,9 +75,21 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            navController.addOnDestinationChangedListener { _, navDestination, _ ->
+                surfaceBackGround = when (navDestination.route) {
+                    MainNavRoutes.BottomNavigation.serializer().descriptor.serialName -> {
+                        R.color.login_screen_background
+                    }
+
+                    else -> {
+                        R.color.shadow_white
+                    }
+                }
+            }
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = colorResource(id = R.color.shadow_white)
+                color = colorResource(id = surfaceBackGround)
             ) {
                 if (!viewModel.state.isCheckingAuth) {
                     NavHost(
@@ -77,22 +100,30 @@ class MainActivity : ComponentActivity() {
                         authNavGraph(navController)
 
                         composable<MainNavRoutes.BottomNavigation>(
-                            exitTransition = fadeOutExitTransition()
+                            exitTransition = fadeAndZoomOutTransition(),
+                            popEnterTransition = fadeAndZoomInTransition(),
                         ) {
+                            LaunchedEffect(Unit) {
+                                setStatusBarIconsColorToDark(true)
+                            }
+
                             BottomNavigation(navController)
                         }
 
                         composable<MainNavRoutes.StatisticsScreen>(
-                            enterTransition = slideIntoContainerFromRightToLeft(),
-                            exitTransition = slideIntoContainerFromLeftToRight()
+                            enterTransition = slideInFromRightToLeft(),
+                            exitTransition = slideOutFromRightToLeft()
                         ) {
                             StatisticsScreen(navController)
                         }
 
                         composable<MainNavRoutes.AddExpenseScreen>(
-                            enterTransition = slideIntoContainerFromRightToLeft(),
-                            exitTransition = slideIntoContainerFromLeftToRight()
+                            enterTransition = slideInFromRightToLeft(),
+                            exitTransition = slideOutFromRightToLeft()
                         ) {
+                            LaunchedEffect(Unit) {
+                                setStatusBarIconsColorToDark(false)
+                            }
                             AddExpenseScreen(navController)
                         }
                     }
@@ -104,24 +135,36 @@ class MainActivity : ComponentActivity() {
 
 fun NavGraphBuilder.authNavGraph(navController: ApplicationNavController) {
     navigation<MainNavRoutes.AuthRoute>(
-        startDestination = AuthRoutes.LoginScreen
+        startDestination = AuthRoutes.WelcomeScreen
     ) {
+        composable<AuthRoutes.WelcomeScreen>(
+            popEnterTransition = fadeAndZoomInTransition(),
+            exitTransition = fadeAndZoomOutTransition(),
+        ) {
+            WelcomeScreen(
+                onNextClick = {
+                    navController.navigateToSingleTop(AuthRoutes.LoginScreen)
+                }
+            )
+        }
+
         composable<AuthRoutes.LoginScreen>(
-            exitTransition = noExitTransition(),
-            popExitTransition = slideOutOfContainerFromRightToLeft()
+            enterTransition = slideInFromRightToLeft(),
+            popExitTransition = slideOutFromRightToLeft()
         ) {
             val viewModel = hiltViewModel<LoginViewModel>()
 
+            ObserveAsEvents(viewModel.events) { event ->
+                when (event) {
+                    LoginViewModel.UiEvent.OnLoginSuccess -> {
+                        navController.navigateToSingleTopAndPopAllScreens(MainNavRoutes.BottomNavigation)
+                    }
+                }
+            }
+
             LoginScreen(
                 uiState = viewModel.loginState,
-                uiAction = viewModel::onUiAction,
-                uiEvent = viewModel.events,
-                onLoginSuccess = {
-                    navController.navigateToSingleTopAndPopAllScreens(MainNavRoutes.BottomNavigation)
-                },
-                onLoginFailure = {
-                    //To be handled
-                }
+                uiAction = viewModel::onUiAction
             )
         }
     }
