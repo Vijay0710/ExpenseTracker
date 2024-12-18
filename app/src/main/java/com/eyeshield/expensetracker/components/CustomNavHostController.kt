@@ -13,13 +13,7 @@ import androidx.navigation.NavigatorProvider
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.DialogNavigator
 
-abstract class CustomNavHostController(context: Context) : NavHostController(context) {
-    init {
-        navigatorProvider.addNavigator(ComposeNavGraphNavigator(navigatorProvider))
-        navigatorProvider.addNavigator(ComposeNavigator())
-        navigatorProvider.addNavigator(DialogNavigator())
-    }
-}
+open class CustomNavHostController(context: Context) : NavHostController(context)
 
 @Navigator.Name("navigation")
 class ComposeNavGraphNavigator(navigatorProvider: NavigatorProvider) :
@@ -32,14 +26,9 @@ inline fun <reified T : CustomNavHostController> rememberCustomNavController(
     val context = LocalContext.current
     return rememberSaveable(
         inputs = navigators,
-        saver = navControllerSaver(
-            context = context,
-            factory = { ctx ->
-                T::class.java.getConstructor(Context::class.java).newInstance(ctx)
-            }
-        )
+        saver = navControllerSaver(context = context)
     ) {
-        T::class.java.getConstructor(Context::class.java).newInstance(context)
+        createNavController<T>(context)
     }.apply {
         for (navigator in navigators) {
             navigatorProvider.addNavigator(navigator)
@@ -47,15 +36,22 @@ inline fun <reified T : CustomNavHostController> rememberCustomNavController(
     }
 }
 
-fun <T : CustomNavHostController> navControllerSaver(
-    context: Context, factory: (Context) -> T
+inline fun <reified T : CustomNavHostController> createNavController(context: Context): T =
+    T::class.java.getConstructor(Context::class.java).newInstance(context).apply {
+        navigatorProvider.addNavigator(ComposeNavGraphNavigator(navigatorProvider))
+        navigatorProvider.addNavigator(ComposeNavigator())
+        navigatorProvider.addNavigator(DialogNavigator())
+    }
+
+inline fun <reified T : CustomNavHostController> navControllerSaver(
+    context: Context
 ): Saver<T, *> =
     Saver(
         save = {
             it.saveState()
         },
         restore = { savedState ->
-            factory(context).apply {
+            createNavController<T>(context).apply {
                 restoreState(savedState)
             }
         }
