@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -58,172 +58,169 @@ fun StatisticsScreen(navController: NavController) {
     var selectedIndex by remember {
         mutableIntStateOf(0)
     }
-
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp)
             .background(color = colorResource(id = R.color.shadow_white))
-            .verticalScroll(rememberScrollState())
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(30.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Icon(
+            Row(
                 modifier = Modifier
-                    .size(30.dp)
-                    .drawBehind {
-                        this.drawCircle(Color.White, radius = 40f)
-                    }
-                    .clickable(
-                        interactionSource = backIcon, indication = ripple(
-                            bounded = false,
-                            radius = 12.dp,
-                            color = Color.Gray.copy(0.5f)
-                        )
-                    ) {
-                        navController.popBackStack()
-                    },
-                painter = painterResource(id = R.drawable.ic_arrow_left),
-                contentDescription = "Back",
-                tint = Color.Unspecified
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(35.dp)
+                        .clickable(
+                            interactionSource = backIcon, indication = ripple(
+                                bounded = false,
+                                radius = 12.dp,
+                                color = Color.Gray.copy(0.5f)
+                            )
+                        ) {
+                            navController.popBackStack()
+                        },
+                    painter = painterResource(id = R.drawable.ic_arrow_left),
+                    contentDescription = "Back",
+                    tint = Color.Unspecified
+                )
+
+                Text(
+                    text = "Statistics", style = TextStyle(
+                        fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.W800
+                    )
+                )
+
+                Icon(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clickable(
+                            interactionSource = backIcon,
+                            indication = ripple(
+                                bounded = false,
+                                radius = 12.dp,
+                                color = Color.Gray.copy(0.5f)
+                            ),
+                            onClick = { navController.popBackStack() }
+                        ),
+                    painter = painterResource(id = R.drawable.ic_share),
+                    contentDescription = "Back"
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .fillMaxWidth(),
+                text = "₹ 3,00,000.00", style = TextStyle(
+                    fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center
+                )
             )
 
             Text(
-                text = "Statistics", style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W800
-                )
-            )
-
-            Icon(
                 modifier = Modifier
-                    .size(20.dp)
-                    .drawBehind {
-                        this.drawCircle(Color.White, radius = 40f)
-                    }
-                    .clickable(
-                        interactionSource = backIcon,
-                        indication = ripple(
-                            bounded = false,
-                            radius = 12.dp,
-                            color = Color.Gray.copy(0.5f)
+                    .padding(top = 10.dp)
+                    .fillMaxWidth(),
+                text = "Sep 16, 2021", style = TextStyle(
+                    fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center
+                ),
+                color = colorResource(id = R.color.statistics_date)
+            )
+
+
+            Row(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth()
+                    .background(Color.White, shape = RoundedCornerShape(50)),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(3) {
+                    val animateSelectedSegmentColor = animateColorAsState(
+                        targetValue = if (selectedIndex == it) statisticsBackgroundColor else Color.Transparent,
+                        animationSpec = tween(
+                            easing = FastOutLinearInEasing,
+                            durationMillis = 500,
+                            delayMillis = 100 * it
                         ),
-                        onClick = { navController.popBackStack() }
-                    ),
-                painter = painterResource(id = R.drawable.ic_share),
-                contentDescription = "Back"
-            )
-        }
-
-        Text(
-            modifier = Modifier
-                .padding(top = 40.dp)
-                .fillMaxWidth(),
-            text = "₹ 3,00,000.00", style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
-        )
-
-        Text(
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .fillMaxWidth(),
-            text = "Sep 16, 2021", style = TextStyle(
-                fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center
-            ),
-            color = colorResource(id = R.color.statistics_date)
-        )
-
-
-        Row(
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(50)),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            repeat(3) {
-                val animateSelectedSegmentColor = animateColorAsState(
-                    targetValue = if (selectedIndex == it) statisticsBackgroundColor else Color.Transparent,
-                    animationSpec = tween(
-                        easing = FastOutLinearInEasing,
-                        durationMillis = 500,
-                        delayMillis = 100 * it
-                    ),
-                    label = "Selected Segment Animation"
-                )
-
-                Spacer(modifier = Modifier.padding(vertical = 20.dp))
-
-                Text(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50f))
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = ripple(bounded = true),
-                            onClick = {
-                                selectedIndex = it
-                            }
-                        )
-                        .background(
-                            color = animateSelectedSegmentColor.value,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .padding(horizontal = 20.dp, vertical = 4.dp),
-                    text = items[it],
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.nunito_semi_bold))
-                    ),
-                    color = if (selectedIndex == it) colorResource(R.color.white) else colorResource(
-                        id = R.color.statistics_date
+                        label = "Selected Segment Animation"
                     )
-                )
-                Spacer(modifier = Modifier.padding(end = 10.dp))
+
+                    Spacer(modifier = Modifier.padding(vertical = 20.dp))
+
+                    Text(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50f))
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = ripple(bounded = true),
+                                onClick = {
+                                    selectedIndex = it
+                                }
+                            )
+                            .background(
+                                color = animateSelectedSegmentColor.value,
+                                shape = RoundedCornerShape(50)
+                            )
+                            .padding(horizontal = 20.dp, vertical = 4.dp),
+                        text = items[it],
+                        style = TextStyle(
+                            fontSize = 15.sp,
+                            fontFamily = FontFamily(Font(R.font.nunito_semi_bold))
+                        ),
+                        color = if (selectedIndex == it) colorResource(R.color.white) else colorResource(
+                            id = R.color.statistics_date
+                        )
+                    )
+                    Spacer(modifier = Modifier.padding(end = 10.dp))
+                }
             }
-        }
 
-        SmoothLineGraph()
+            SmoothLineGraph()
 
-        Text(
-            modifier = Modifier.padding(top = 20.dp),
-            text = "Top Spending", style = TextStyle(
-                fontSize = 20.sp, color = colorResource(id = R.color.transaction_heading),
-                fontFamily = FontFamily(Font(R.font.nunito_bold))
+            Text(
+                modifier = Modifier.padding(top = 20.dp),
+                text = "Top Spending", style = TextStyle(
+                    fontSize = 20.sp, color = colorResource(id = R.color.transaction_heading),
+                    fontFamily = FontFamily(Font(R.font.nunito_bold))
+                )
             )
-        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            repeat(2) {
-                TransactionDetails(
-                    transactionData = TransactionData(
-                        expenseResourceID = R.drawable.spotify_icon,
-                        expenseName = "Spotify Premium",
-                        expenseDate = "Sep 21, 2024",
-                        expenseAmount = "- ₹2500",
-                        expenseId = "2"
-                    ),
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+                repeat(2) {
+                    TransactionDetails(
+                        transactionData = TransactionData(
+                            expenseResourceID = R.drawable.spotify_icon,
+                            expenseName = "Spotify Premium",
+                            expenseDate = "Sep 21, 2024",
+                            expenseAmount = "- ₹2500",
+                            expenseId = "2"
+                        ),
+                    )
+                }
             }
+
         }
-
     }
-
 }
 
 @Composable
