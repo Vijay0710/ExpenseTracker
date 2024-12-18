@@ -1,11 +1,6 @@
 package com.eyeshield.expensetracker.auth.login
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,13 +29,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.common.AlertIcon
-import com.eyeshield.expensetracker.common.AnimatedLinearProgressIndicator
+import com.eyeshield.expensetracker.common.AnimatedToast
 import com.eyeshield.expensetracker.common.CheckIcon
 import com.eyeshield.expensetracker.common.CommonButton
 import com.eyeshield.expensetracker.common.CommonOutlineTextField
@@ -49,33 +42,14 @@ import com.eyeshield.expensetracker.common.EyeClosed
 import com.eyeshield.expensetracker.common.EyeOpened
 import com.eyeshield.expensetracker.common.GradientBackground
 import com.eyeshield.expensetracker.common.LockIcon
-import com.eyeshield.expensetracker.common.ObserveAsEvents
-import com.eyeshield.expensetracker.horizontalPadding
-import com.eyeshield.expensetracker.topPadding
-import com.eyeshield.expensetracker.verticalPadding
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.eyeshield.expensetracker.extensions.horizontalPadding
+import com.eyeshield.expensetracker.extensions.topPadding
 
 @Composable
 fun LoginScreen(
     uiState: LoginViewModel.LoginState,
-    uiAction: (LoginViewModel.UiAction) -> Unit,
-    uiEvent: Flow<LoginViewModel.UiEvent>,
-    onLoginSuccess: () -> Unit,
-    onLoginFailure: () -> Unit
+    uiAction: (LoginViewModel.UiAction) -> Unit
 ) {
-
-    ObserveAsEvents(uiEvent) { event ->
-        when (event) {
-            LoginViewModel.UiEvent.OnLoginFailure -> {
-                onLoginFailure()
-            }
-
-            LoginViewModel.UiEvent.OnLoginSuccess -> {
-                onLoginSuccess()
-            }
-        }
-    }
 
     GradientBackground {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
@@ -179,6 +153,7 @@ fun LoginScreen(
 
                     CommonButton(
                         modifier = Modifier
+                            .fillMaxWidth()
                             .height(55.dp)
                             .horizontalPadding(50.dp),
                         title = stringResource(R.string.login_button_title),
@@ -195,65 +170,13 @@ fun LoginScreen(
         }
     }
 
-    AnimatedVisibility(
-        visible = uiState.shouldShowToast,
-        enter = slideInVertically(
-            animationSpec = tween(1000),
-            initialOffsetY = { -1000 }
-        ),
-        exit = slideOutVertically(
-            animationSpec = tween(1000),
-            targetOffsetY = { -1000 }
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .topPadding(40.dp)
-                .horizontalPadding(20.dp),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                color = colorResource(R.color.login_surface_background).copy(0.6f),
-                shape = RoundedCornerShape(20.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .verticalPadding(5.dp),
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = AlertIcon,
-                        contentDescription = "Login Alert",
-                        tint = Color.Unspecified
-                    )
-                    Text(
-                        text = uiState.errorMessage,
-                        style = TextStyle(
-                            fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center
-                        ),
-                        color = colorResource(R.color.login_screen_error_content),
-                        modifier = Modifier
-                    )
-                }
-
-                AnimatedLinearProgressIndicator(
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    onAnimationFinished = {
-                        uiAction.invoke(LoginViewModel.UiAction.OnTrackAnimationFinished)
-                    }
-                )
-            }
+    AnimatedToast(
+        shouldShowToast = uiState.shouldShowToast,
+        errorMessage = uiState.errorMessage,
+        onProgressFinished = {
+            uiAction.invoke(LoginViewModel.UiAction.OnTrackAnimationFinished)
         }
-    }
-
+    )
 }
 
 @Preview
@@ -268,9 +191,6 @@ private fun PreviewLoginScreen() {
             shouldShowToast = true,
             errorMessage = "Something went wrong on our end! Our team is on it, armed with coffee and determination!"
         ),
-        uiAction = {},
-        uiEvent = flowOf(),
-        onLoginSuccess = {},
-        onLoginFailure = {}
+        uiAction = {}
     )
 }
