@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
@@ -77,7 +79,9 @@ class MainActivity : ComponentActivity() {
 
             navController.addOnDestinationChangedListener { _, navDestination, _ ->
                 surfaceBackGround = when (navDestination.route) {
-                    MainNavRoutes.BottomNavigation.serializer().descriptor.serialName -> {
+                    MainNavRoutes.BottomNavigation.serializer().descriptor.serialName,
+                    AuthRoutes.WelcomeScreen.serializer().descriptor.serialName,
+                    AuthRoutes.LoginScreen.serializer().descriptor.serialName -> {
                         R.color.login_screen_background
                     }
 
@@ -94,7 +98,9 @@ class MainActivity : ComponentActivity() {
                 if (!viewModel.state.isCheckingAuth) {
                     NavHost(
                         navController = navController,
-                        startDestination = startDestination
+                        startDestination = startDestination,
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None }
                     ) {
 
                         authNavGraph(navController)

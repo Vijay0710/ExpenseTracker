@@ -8,6 +8,7 @@ import com.eyeshield.expensetracker.auth.AccessTokenResponse
 import com.eyeshield.expensetracker.auth.AuthInfo
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -32,6 +33,11 @@ class HttpClientFactory @Inject constructor(
 ) {
     fun build(): HttpClient {
         return HttpClient(CIO) {
+            install(HttpTimeout) {
+                requestTimeoutMillis = 60_000
+                connectTimeoutMillis = 60_000
+                socketTimeoutMillis = 60_000
+            }
 
             install(ContentNegotiation) {
                 json(

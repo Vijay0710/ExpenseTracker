@@ -6,10 +6,8 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,7 +30,12 @@ import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 @Composable
 fun Transactions() {
 
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .nestedScroll(rememberNestedScrollInteropConnection()),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             val interactionSource = remember {
@@ -66,46 +71,54 @@ fun Transactions() {
         }
 
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+        Column(
+            modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            item {
-                Row(
-                    modifier = Modifier,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    IncomeExpenseCard(
-                        resourceId = R.drawable.income,
-                        resourceIdColor = colorResource(id = R.color.income_icon),
-                        resourceIdBackgroundColor = colorResource(id = R.color.income_icon_background),
-                        resourcePercentage = "+24%",
-                        resourcePercentageColor = colorResource(id = R.color.income_percentage),
-                        resourceType = "Income"
-                    )
 
-                    IncomeExpenseCard(
-                        resourceId = R.drawable.expense,
-                        resourceIdColor = colorResource(id = R.color.expense_icon),
-                        resourceIdBackgroundColor = colorResource(id = R.color.expense_icon_background),
-                        resourcePercentage = "-24%",
-                        resourcePercentageColor = colorResource(id = R.color.expense_percentage),
-                        resourceType = "Expense"
-                    )
-                }
-            }
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                IncomeExpenseCard(
+                    resourceId = R.drawable.income,
+                    resourceIdColor = colorResource(id = R.color.income_icon),
+                    resourceIdBackgroundColor = colorResource(id = R.color.income_icon_background),
+                    resourcePercentage = "+24%",
+                    resourcePercentageColor = colorResource(id = R.color.income_percentage),
+                    resourceType = "Income"
+                )
 
-            items(2) {
-                TransactionDetails(
-                    transactionData = TransactionData(
-                        expenseResourceID = R.drawable.spotify_icon,
-                        expenseName = "Spotify Premium",
-                        expenseDate = "Sep 21, 2024",
-                        expenseAmount = "- ₹2500",
-                        expenseId = "1"
-                    ),
+                IncomeExpenseCard(
+                    resourceId = R.drawable.expense,
+                    resourceIdColor = colorResource(id = R.color.expense_icon),
+                    resourceIdBackgroundColor = colorResource(id = R.color.expense_icon_background),
+                    resourcePercentage = "-24%",
+                    resourcePercentageColor = colorResource(id = R.color.expense_percentage),
+                    resourceType = "Expense"
                 )
             }
+
+            TransactionDetails(
+                transactionData = TransactionData(
+                    expenseResourceID = R.drawable.spotify_icon,
+                    expenseName = "Spotify Premium",
+                    expenseDate = "Sep 21, 2024",
+                    expenseAmount = "- ₹2500",
+                    expenseId = "1"
+                ),
+            )
+
+            TransactionDetails(
+                transactionData = TransactionData(
+                    expenseResourceID = R.drawable.spotify_icon,
+                    expenseName = "Spotify Premium",
+                    expenseDate = "Sep 21, 2024",
+                    expenseAmount = "- ₹2500",
+                    expenseId = "1"
+                ),
+            )
+
         }
     }
 }

@@ -40,6 +40,15 @@ class HomeViewModel @Inject constructor(
             UiAction.OnTrackIndicatorFinished -> {
                 updateToastVisibilityState(false)
             }
+
+            UiAction.OnPullToRefreshClicked -> {
+                updatePullToRefreshStatus(true)
+                viewModelScope.launch {
+                    doCreditAccountsInfoCall(
+                        isPullToRefresh = true
+                    )
+                }
+            }
         }
     }
 
@@ -59,7 +68,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun doCreditAccountsInfoCall() {
+    private suspend fun doCreditAccountsInfoCall(
+        isPullToRefresh: Boolean = false
+    ) {
         shouldShowLoader(true)
 
         val result = client.post<Any, List<CreditAccountResponseModel>>(
@@ -103,6 +114,18 @@ class HomeViewModel @Inject constructor(
         }
 
         shouldShowLoader(false)
+
+        if (isPullToRefresh) {
+            updatePullToRefreshStatus(status = false)
+        }
+    }
+
+    private fun updatePullToRefreshStatus(status: Boolean) {
+        _uiState.update {
+            it.copy(
+                isPullToRefreshInProgress = status
+            )
+        }
     }
 
     private fun updateToastMessageAndVisibility(message: String) {
@@ -127,10 +150,12 @@ class HomeViewModel @Inject constructor(
         val isLoading: Boolean = true,
         val creditAccounts: List<CreditAccountResponseModel> = listOf(),
         val shouldShowToast: Boolean = false,
-        val errorMessage: String = ""
+        val errorMessage: String = "",
+        val isPullToRefreshInProgress: Boolean = false
     )
 
     sealed interface UiAction {
         data object OnTrackIndicatorFinished : UiAction
+        data object OnPullToRefreshClicked : UiAction
     }
 }

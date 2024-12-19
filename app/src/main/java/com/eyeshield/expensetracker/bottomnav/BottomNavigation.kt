@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -92,9 +91,7 @@ fun BottomNavigation(mainNavController: ApplicationNavController) {
         ) {
             composable<Tabs.HomeScreen> {
                 val viewModel = hiltViewModel<HomeViewModel>()
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle(
-                    LocalLifecycleOwner.current
-                )
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
                 HomeScreen(
                     onNavigate = { route ->
@@ -107,7 +104,9 @@ fun BottomNavigation(mainNavController: ApplicationNavController) {
             composable<Tabs.CalendarScreen> {
                 val transactionViewModel = hiltViewModel<TransactionViewModel>()
 
-                BackHandler { bottomNavController.popUpToHomeScreen() }
+                BackHandler {
+                    bottomNavController.popUpToHomeScreen()
+                }
 
                 LaunchedEffect(Unit) {
                     transactionViewModel.getTransactions()

@@ -22,8 +22,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +70,7 @@ import com.eyeshield.expensetracker.home_graph.home.components.CreditCardContent
 import com.eyeshield.expensetracker.home_graph.home.components.Transactions
 import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponseModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigate: (MainNavRoutes) -> Unit,
@@ -76,6 +83,7 @@ fun HomeScreen(
     val cardsListSize = remember {
         mutableIntStateOf(3)
     }
+    val pullToRefreshState = rememberPullToRefreshState()
 
     val cardColors: List<Int> = remember {
         listOf(
@@ -151,159 +159,185 @@ fun HomeScreen(
             }
         }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(40.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    "Good Morning!", style = TextStyle(
-                        fontSize = 15.sp, color = colorResource(id = R.color.greeting),
-                        fontFamily = FontFamily(Font(R.font.nunito_regular))
-                    )
-                )
-
-                Text(
-                    modifier = Modifier.padding(top = 10.dp),
-                    text = "Vijay A", style = TextStyle(
-                        fontSize = 20.sp, color = colorResource(id = R.color.username),
-                        fontFamily = FontFamily(Font(R.font.nunito_bold))
-                    )
-                )
-            }
-
-            Icon(
-                modifier = Modifier
-                    .size(20.dp)
-                    .align(Alignment.CenterVertically)
-                    .drawBehind {
-                        drawCircle(Color.White, radius = 48f)
-                    }
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = ripple(
-                            bounded = false,
-                            radius = 17.dp,
-                            color = Color.Transparent
-                        ),
-                        onClick = {}
-                    ),
-                painter = painterResource(id = R.drawable.notification),
-                contentDescription = "Notification",
-                tint = if (isPressed.value)
-                    colorResource(id = R.color.notification_pressed_state)
-                else
-                    Color.Unspecified
+    PullToRefreshBox(
+        modifier = Modifier,
+        isRefreshing = uiState.isPullToRefreshInProgress,
+        onRefresh = {
+            uiAction(HomeViewModel.UiAction.OnPullToRefreshClicked)
+        },
+        state = pullToRefreshState,
+        indicator = {
+            Indicator(
+                state = pullToRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                isRefreshing = uiState.isPullToRefreshInProgress,
+                containerColor = colorResource(R.color.shadow_white),
+                color = colorResource(R.color.login_screen_background)
             )
         }
-
-        if (uiState.isLoading) {
-            CardShimmer()
-        } else {
-            Box(
+    ) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(40.dp)
+        ) {
+            Row(
                 modifier = Modifier
-                    .graphicsLayer {
-                        rotationY = rotationYAxis
-                        cameraDistance = 20f
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDrag = { _, dragAmount ->
-                                rotationYAxis =
-                                    (rotationYAxis + dragAmount.x / 5).coerceIn(-20f, 20f)
-                            },
-                            onDragEnd = {
-                                rotationYAxis = 0f
-                            },
-                            onDragCancel = {
-                                rotationYAxis = 0f
-                            },
-                        )
-                    }
+                    .fillMaxWidth()
             ) {
-                uiState.creditAccounts.zip(cardInfoList)
-                    .mapIndexed { index, cardPositionAndOffsetState ->
-                        key(index) {
-                            var cardFace by remember { mutableStateOf(CardFace.Front) }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text(
+                        "Good Morning!", style = TextStyle(
+                            fontSize = 15.sp, color = colorResource(id = R.color.greeting),
+                            fontFamily = FontFamily(Font(R.font.nunito_regular))
+                        )
+                    )
 
-                            val zOffsetDelay = remember(index) { 100 * index }
-                            val yOffsetDelay =
-                                remember(index) { 2 * zOffsetDelay + (100 * uiState.creditAccounts.size - 1) }
+                    Text(
+                        modifier = Modifier.padding(top = 10.dp),
+                        text = "Vijay A", style = TextStyle(
+                            fontSize = 20.sp, color = colorResource(id = R.color.username),
+                            fontFamily = FontFamily(Font(R.font.nunito_bold))
+                        )
+                    )
+                }
 
-                            val animateYOffset = animateDpAsState(
-                                targetValue = cardPositionAndOffsetState.second.offsetY,
-                                label = "Y Offset Animation",
-                                animationSpec = tween(
-                                    500,
-                                    easing = EaseIn,
-                                    delayMillis = yOffsetDelay
-                                )
-                            )
-
-                            val animateZIndex = animateFloatAsState(
-                                targetValue = cardPositionAndOffsetState.second.zIndex,
-                                label = "Z index animation",
-                                animationSpec = tween(
-                                    durationMillis = 500,
-                                    easing = EaseIn,
-                                    delayMillis = zOffsetDelay
-                                )
-                            )
-
-                            CreditCard(
-                                modifier = Modifier
-                                    .zIndex(animateZIndex.value)
-                                    .offset {
-                                        IntOffset(x = 0, y = animateYOffset.value.roundToPx())
-                                    },
-                                cardContainerColor = colorResource(
-                                    cardPositionAndOffsetState.second.cardColor
-                                ),
-                                cardFace = cardFace,
-                                onClick = {
-                                    if (cardPositionAndOffsetState.second.position == cardInfoList.size - 1) {
-                                        cardFace = cardFace.next
-                                    } else {
-                                        selectedCard.value =
-                                            swapCardDetailsOnCardClick(
-                                                index,
-                                                cardPositionAndOffsetState.second,
-                                                cardPositionAndOffsetState.first
-                                            ).copy()
-                                    }
-                                },
-                                front = {
-                                    CreditCardContent(
-                                        onNavigate = onNavigate,
-                                        accountInfo = cardPositionAndOffsetState.first
-                                    )
-                                },
-                                back = {
-
-                                }
-                            )
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+                        .drawBehind {
+                            drawCircle(Color.White, radius = 48f)
                         }
-                    }
-            }
-
-            if (uiState.creditAccounts.size > 1) {
-                Spacer(
-                    modifier = Modifier.height(5.dp)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = ripple(
+                                bounded = false,
+                                radius = 17.dp,
+                                color = Color.Transparent
+                            ),
+                            onClick = {}
+                        ),
+                    painter = painterResource(id = R.drawable.notification),
+                    contentDescription = "Notification",
+                    tint = if (isPressed.value)
+                        colorResource(id = R.color.notification_pressed_state)
+                    else
+                        Color.Unspecified
                 )
             }
-        }
 
-        Transactions()
+            if (uiState.isLoading) {
+                CardShimmer()
+            } else {
+                Box(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            rotationY = rotationYAxis
+                            cameraDistance = 20f
+                        }
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDrag = { _, dragAmount ->
+                                    rotationYAxis =
+                                        (rotationYAxis + dragAmount.x / 5).coerceIn(-20f, 20f)
+                                },
+                                onDragEnd = {
+                                    rotationYAxis = 0f
+                                },
+                                onDragCancel = {
+                                    rotationYAxis = 0f
+                                },
+                            )
+                        }
+                ) {
+                    uiState.creditAccounts.zip(cardInfoList)
+                        .mapIndexed { index, cardPositionAndOffsetState ->
+                            key(index) {
+                                var cardFace by remember { mutableStateOf(CardFace.Front) }
+
+                                val zOffsetDelay = remember(index) { 100 * index }
+                                val yOffsetDelay =
+                                    remember(index) { 2 * zOffsetDelay + (100 * uiState.creditAccounts.size - 1) }
+
+                                val animateYOffset = animateDpAsState(
+                                    targetValue = cardPositionAndOffsetState.second.offsetY,
+                                    label = "Y Offset Animation",
+                                    animationSpec = tween(
+                                        500,
+                                        easing = EaseIn,
+                                        delayMillis = yOffsetDelay
+                                    )
+                                )
+
+                                val animateZIndex = animateFloatAsState(
+                                    targetValue = cardPositionAndOffsetState.second.zIndex,
+                                    label = "Z index animation",
+                                    animationSpec = tween(
+                                        durationMillis = 500,
+                                        easing = EaseIn,
+                                        delayMillis = zOffsetDelay
+                                    )
+                                )
+
+                                CreditCard(
+                                    modifier = Modifier
+                                        .zIndex(animateZIndex.value)
+                                        .offset {
+                                            IntOffset(
+                                                x = 0,
+                                                y = animateYOffset.value.roundToPx()
+                                            )
+                                        },
+                                    cardContainerColor = colorResource(
+                                        cardPositionAndOffsetState.second.cardColor
+                                    ),
+                                    cardFace = cardFace,
+                                    onClick = {
+                                        if (cardPositionAndOffsetState.second.position == cardInfoList.size - 1) {
+                                            cardFace = cardFace.next
+                                        } else {
+                                            selectedCard.value =
+                                                swapCardDetailsOnCardClick(
+                                                    index,
+                                                    cardPositionAndOffsetState.second,
+                                                    cardPositionAndOffsetState.first
+                                                ).copy()
+                                        }
+                                    },
+                                    front = {
+                                        CreditCardContent(
+                                            onNavigate = onNavigate,
+                                            accountInfo = cardPositionAndOffsetState.first
+                                        )
+                                    },
+                                    back = {
+
+                                    }
+                                )
+                            }
+                        }
+                }
+
+                if (uiState.creditAccounts.size > 1) {
+                    Spacer(
+                        modifier = Modifier.height(5.dp)
+                    )
+                }
+            }
+
+            Transactions()
+
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
+
+
 
     AnimatedToast(
         shouldShowToast = uiState.shouldShowToast,
@@ -341,7 +375,8 @@ fun HomeScreenPreview() {
                 )
             ),
             shouldShowToast = false,
-            errorMessage = "Oops! Something Went wrong! Please try again later"
+            errorMessage = "Oops! Something Went wrong! Please try again later",
+            isPullToRefreshInProgress = false
         ),
         uiAction = {
 
