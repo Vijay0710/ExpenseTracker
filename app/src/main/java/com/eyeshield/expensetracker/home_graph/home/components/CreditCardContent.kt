@@ -16,23 +16,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
-import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponseModel
+import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponse
 
 @Composable
 fun CreditCardContent(
-    accountInfo: CreditAccountResponseModel,
+    accountInfo: CreditAccountResponse,
     onNavigate: (MainNavRoutes) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -95,17 +95,9 @@ fun CreditCardContent(
             Text(
                 modifier = Modifier.weight(1f),
                 text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 12.sp
-                        )
-                    ) {
-                        append("∗∗∗∗  ∗∗∗∗  ∗∗∗∗ ")
-                    }
-
-                    append(" 3214")
+                    append(accountInfo.formatAccountNumberForDisplay())
                 }, style = TextStyle(
-                    fontSize = 15.sp,
+                    fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.nunito_bold))
                 ),
                 color = colorResource(id = R.color.credit_card_number)
@@ -113,7 +105,7 @@ fun CreditCardContent(
 
             Icon(
                 modifier = Modifier.size(48.dp),
-                painter = painterResource(id = R.drawable.mastercard_logo),
+                imageVector = ImageVector.vectorResource(id = accountInfo.getLogoType()),
                 contentDescription = "Credit Card Logo",
                 tint = Color.Unspecified
             )

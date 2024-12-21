@@ -10,3 +10,12 @@ fun Modifier.startPadding(start: Dp): Modifier = padding(start = start)
 fun Modifier.endPadding(end: Dp): Modifier = padding(end = end)
 fun Modifier.horizontalPadding(horizontal: Dp) = padding(start = horizontal, end = horizontal)
 fun Modifier.verticalPadding(vertical: Dp) = padding(top = vertical, bottom = vertical)
+
+/**
+ * Returns the data provided if the string is null or else returns the String
+ * **/
+fun String?.or(data: String): String =
+    if (this.isNullOrBlank())
+        data
+    else
+        this

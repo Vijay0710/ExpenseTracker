@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyeshield.expensetracker.api.ApiResult
 import com.eyeshield.expensetracker.api.DataError
-import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponseModel
+import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponse
 import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.HttpClient
@@ -73,7 +73,7 @@ class HomeViewModel @Inject constructor(
     ) {
         shouldShowLoader(true)
 
-        val result = client.post<Any, List<CreditAccountResponseModel>>(
+        val result = client.post<Any, List<CreditAccountResponse>>(
             route = "/accounts/credit_account_info"
         )
 
@@ -137,7 +137,7 @@ class HomeViewModel @Inject constructor(
         updateToastVisibilityState(true)
     }
 
-    private fun updateCreditAccounts(data: List<CreditAccountResponseModel>) {
+    private fun updateCreditAccounts(data: List<CreditAccountResponse>) {
         _uiState.update {
             it.copy(
                 creditAccounts = data
@@ -148,7 +148,7 @@ class HomeViewModel @Inject constructor(
 
     data class UiState(
         val isLoading: Boolean = true,
-        val creditAccounts: List<CreditAccountResponseModel> = listOf(),
+        val creditAccounts: List<CreditAccountResponse> = listOf(),
         val shouldShowToast: Boolean = false,
         val errorMessage: String = "",
         val isPullToRefreshInProgress: Boolean = false

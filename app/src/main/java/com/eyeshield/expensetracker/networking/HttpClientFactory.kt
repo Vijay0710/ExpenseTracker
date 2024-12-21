@@ -63,14 +63,6 @@ class HttpClientFactory @Inject constructor(
 
             install(Auth) {
                 bearer {
-                    loadTokens {
-                        val info = encryptedSessionStorage.get()
-                        BearerTokens(
-                            accessToken = info?.accessToken.orEmpty(),
-                            refreshToken = info?.refreshToken.orEmpty()
-                        )
-                    }
-
                     // Shouldn't add token to login call
                     sendWithoutRequest { request ->
                         val endpoint = request.url.encodedPath
@@ -80,7 +72,16 @@ class HttpClientFactory @Inject constructor(
                         ) || !endpoint.contains("/auth/verify_token", ignoreCase = true)
                     }
 
+                    loadTokens {
+                        val info = encryptedSessionStorage.get()
+                        BearerTokens(
+                            accessToken = info?.accessToken.orEmpty(),
+                            refreshToken = info?.refreshToken.orEmpty()
+                        )
+                    }
+
                     refreshTokens {
+
                         val info = encryptedSessionStorage.get()
                         val response = client.post<AccessTokenRequest, AccessTokenResponse>(
                             route = "/auth/refresh_token",
@@ -102,6 +103,7 @@ class HttpClientFactory @Inject constructor(
                                 accessToken = newAuthInfo.accessToken.orEmpty(),
                                 refreshToken = info?.refreshToken.orEmpty()
                             )
+
                         } else {
                             BearerTokens(
                                 accessToken = "",

@@ -1,6 +1,8 @@
 package com.eyeshield.expensetracker
 
+import android.os.Build
 import android.os.Bundle
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +11,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +61,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setStatusBarIconsColorToDark(false)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) {
+
+                // Handle back navigation
+                finish() // Or any custom behavior
+            }
+        } else {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         setContent {
 
             val navController = rememberCustomNavController<ApplicationNavController>()
@@ -79,10 +93,13 @@ class MainActivity : ComponentActivity() {
 
             navController.addOnDestinationChangedListener { _, navDestination, _ ->
                 surfaceBackGround = when (navDestination.route) {
-                    MainNavRoutes.BottomNavigation.serializer().descriptor.serialName,
                     AuthRoutes.WelcomeScreen.serializer().descriptor.serialName,
                     AuthRoutes.LoginScreen.serializer().descriptor.serialName -> {
                         R.color.login_screen_background
+                    }
+
+                    MainNavRoutes.BottomNavigation.serializer().descriptor.serialName -> {
+                        R.color.shadow_white
                     }
 
                     else -> {
@@ -109,7 +126,7 @@ class MainActivity : ComponentActivity() {
                             exitTransition = fadeAndZoomOutTransition(),
                             popEnterTransition = fadeAndZoomInTransition(),
                         ) {
-                            LaunchedEffect(Unit) {
+                            SideEffect {
                                 setStatusBarIconsColorToDark(true)
                             }
 
@@ -127,7 +144,7 @@ class MainActivity : ComponentActivity() {
                             enterTransition = slideInFromRightToLeft(),
                             exitTransition = slideOutFromRightToLeft()
                         ) {
-                            LaunchedEffect(Unit) {
+                            SideEffect {
                                 setStatusBarIconsColorToDark(false)
                             }
                             AddExpenseScreen(navController)

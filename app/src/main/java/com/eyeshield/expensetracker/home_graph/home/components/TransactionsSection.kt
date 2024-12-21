@@ -29,7 +29,6 @@ import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
 
 @Composable
 fun Transactions() {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -37,7 +36,10 @@ fun Transactions() {
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
 
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             val interactionSource = remember {
                 MutableInteractionSource()
             }
@@ -75,7 +77,6 @@ fun Transactions() {
             modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-
             Row(
                 modifier = Modifier,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -118,7 +119,6 @@ fun Transactions() {
                     expenseId = "1"
                 ),
             )
-
         }
     }
 }

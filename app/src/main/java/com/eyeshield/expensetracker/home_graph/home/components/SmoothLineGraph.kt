@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -50,7 +51,12 @@ fun SmoothLineGraph() {
     Box(
         modifier = Modifier.padding(top = 20.dp)
     ) {
-        val animationProgress = remember { Animatable(0f) }
+        val isPreview = LocalInspectionMode.current
+        val animationProgress = remember {
+            Animatable(
+                if (isPreview) 1f else 0f
+            )
+        }
         var highlightedWeek by remember { mutableStateOf<Int?>(null) }
         val localView = LocalView.current
 
@@ -60,9 +66,9 @@ fun SmoothLineGraph() {
             }
         }
 
-        LaunchedEffect(key1 = graphData, block = {
+        LaunchedEffect(graphData) {
             animationProgress.animateTo(1f, tween(3000))
-        })
+        }
 
         val textMeasurer = rememberTextMeasurer()
         val labelTextStyle = MaterialTheme.typography.labelSmall
@@ -180,8 +186,6 @@ fun DrawScope.drawHighlight(
     val pointY = size.height - (size.height * percentageHeight)
     // draw vertical line on week
     val x = reformedHighlightedWeek * (size.width / (graphData.size - 1))
-    println("START OFFSET OF HIGHLIGHTED WEEK ($x,0f)")
-    println("END OFFSET OF HIGHLIGHTED WEEK ($x,${size.height})")
     drawLine(
         HighlightColor,
         start = Offset(x, pointY),
@@ -211,12 +215,24 @@ fun DrawScope.drawHighlight(
     val highlightContainerSize = (textLayoutResult.size).toIntRect().inflate(4.dp.roundToPx()).size
     val boxTopLeft = (x - (highlightContainerSize.width / 2f))
         .coerceIn(0f, size.width - highlightContainerSize.width)
+
+    drawRoundRect(
+        Color.Gray.copy(0.1f),
+        topLeft = Offset(boxTopLeft - 1.dp.toPx(), pointY - 41.dp.toPx()),
+        size = Size(
+            highlightContainerSize.width.toFloat() + 6f,
+            highlightContainerSize.height.toFloat() + 6f
+        ),
+        cornerRadius = CornerRadius(8.dp.toPx()),
+    )
+
     drawRoundRect(
         Color.White,
         topLeft = Offset(boxTopLeft, pointY - 40.dp.toPx()),
         size = highlightContainerSize.toSize(),
-        cornerRadius = CornerRadius(8.dp.toPx())
+        cornerRadius = CornerRadius(8.dp.toPx()),
     )
+
     drawText(
         textLayoutResult,
         color = Color.Black,
