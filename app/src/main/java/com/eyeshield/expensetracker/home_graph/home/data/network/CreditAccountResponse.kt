@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package com.eyeshield.expensetracker.home_graph.home.data
+package com.eyeshield.expensetracker.home_graph.home.data.network
 
 import androidx.annotation.DrawableRes
 import com.eyeshield.expensetracker.R

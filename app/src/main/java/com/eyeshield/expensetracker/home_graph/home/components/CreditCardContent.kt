@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
-import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponse
+import com.eyeshield.expensetracker.home_graph.home.data.network.CreditAccountResponse
 
 @Composable
 fun CreditCardContent(

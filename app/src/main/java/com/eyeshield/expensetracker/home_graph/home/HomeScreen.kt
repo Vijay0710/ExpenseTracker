@@ -7,9 +7,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -32,13 +32,9 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,20 +53,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
-import com.eyeshield.expensetracker.cards.data.CardInfo
 import com.eyeshield.expensetracker.common.AnimatedToast
 import com.eyeshield.expensetracker.home_graph.home.components.CardFace
 import com.eyeshield.expensetracker.home_graph.home.components.CardShimmer
 import com.eyeshield.expensetracker.home_graph.home.components.CreditCard
 import com.eyeshield.expensetracker.home_graph.home.components.CreditCardContent
 import com.eyeshield.expensetracker.home_graph.home.components.Transactions
-import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponse
+import com.eyeshield.expensetracker.home_graph.home.data.CardInfo
+import com.eyeshield.expensetracker.home_graph.home.data.network.CreditAccountResponse
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigate: (MainNavRoutes) -> Unit,
@@ -80,84 +75,16 @@ fun HomeScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     val showLogOutDialog = remember { mutableStateOf(false) }
-    val cardsListSize = remember {
-        mutableIntStateOf(3)
-    }
     val pullToRefreshState = rememberPullToRefreshState()
-
-    val cardColors: List<Int> = remember {
-        listOf(
-            R.color.card_color_1,
-            R.color.card_color_2,
-            R.color.card_color_3
-        )
-    }
-    val cardInfoList = remember {
-        mutableStateListOf<CardInfo>()
-    }
-
-    val selectedCard by remember {
-        derivedStateOf {
-            mutableStateOf(
-                cardInfoList[0]
-            )
-        }
-    }
 
     // To show 3D effect in Y Axis when user scrolls to the end of cards
     var rotationYAxis by remember {
         mutableFloatStateOf(0f)
     }
 
-    LaunchedEffect(Unit) {
-        repeat(cardsListSize.intValue) { index ->
-            cardInfoList.add(
-                CardInfo(
-                    position = index,
-                    zIndex = index * 1f,
-                    offsetY = index * 30.dp,
-                    cardColor = cardColors[index]
-                )
-            )
-        }
-    }
-
     BackHandler {
         showLogOutDialog.value = !showLogOutDialog.value
     }
-
-    val swapCardDetailsOnCardClick: (Int, CardInfo) -> CardInfo =
-        remember {
-            { index, selectedCard ->
-                val getCardDataForMaximumCard = cardInfoList.maxByOrNull {
-                    it.zIndex
-                }
-
-                val maximumItemIndex = cardInfoList.indexOf(
-                    getCardDataForMaximumCard
-                )
-
-                val temp = cardInfoList[index].copy()
-
-                cardInfoList[index] =
-                    cardInfoList[maximumItemIndex].copy(
-                        zIndex = cardInfoList[maximumItemIndex].zIndex,
-                        offsetY = cardInfoList[maximumItemIndex].offsetY,
-                        cardColor = cardInfoList[index].cardColor,
-                        position = cardInfoList[maximumItemIndex].position
-                    )
-
-                cardInfoList[maximumItemIndex] = temp.copy(
-                    zIndex = temp.zIndex,
-                    offsetY = temp.offsetY,
-                    cardColor = cardInfoList[maximumItemIndex].cardColor,
-                    position = temp.position
-                )
-
-                selectedCard
-
-            }
-        }
 
     PullToRefreshBox(
         modifier = Modifier,
@@ -192,7 +119,8 @@ fun HomeScreen(
                             .weight(1f)
                     ) {
                         Text(
-                            "Good Morning!", style = TextStyle(
+                            text = "Good Morning!",
+                            style = TextStyle(
                                 fontSize = 15.sp, color = colorResource(id = R.color.greeting),
                                 fontFamily = FontFamily(Font(R.font.nunito_regular))
                             )
@@ -256,9 +184,22 @@ fun HomeScreen(
                                         rotationYAxis = 0f
                                     },
                                 )
+
+                                detectVerticalDragGestures(
+                                    onVerticalDrag = { _, dragAmount ->
+                                        rotationYAxis =
+                                            (rotationYAxis + dragAmount / 5).coerceIn(-20f, 20f)
+                                    },
+                                    onDragEnd = {
+                                        rotationYAxis = 0f
+                                    },
+                                    onDragCancel = {
+                                        rotationYAxis = 0f
+                                    }
+                                )
                             }
                     ) {
-                        uiState.creditAccounts.zip(cardInfoList)
+                        uiState.creditAccounts.zip(uiState.cardInfoList)
                             .mapIndexed { index, cardPositionAndOffsetState ->
                                 key(index) {
                                     var cardFace by remember { mutableStateOf(CardFace.Front) }
@@ -301,14 +242,15 @@ fun HomeScreen(
                                         ),
                                         cardFace = cardFace,
                                         onClick = {
-                                            if (cardPositionAndOffsetState.second.position == cardInfoList.size - 1) {
+                                            if (cardPositionAndOffsetState.second.position == uiState.cardInfoList.size - 1) {
                                                 cardFace = cardFace.next
                                             } else {
-                                                selectedCard.value =
-                                                    swapCardDetailsOnCardClick(
-                                                        index,
-                                                        cardPositionAndOffsetState.second
-                                                    ).copy()
+                                                uiAction(
+                                                    HomeViewModel.UiAction.TransformCreditCards(
+                                                        index = index,
+                                                        selectedCard = cardPositionAndOffsetState.second
+                                                    )
+                                                )
                                             }
                                         },
                                         front = {
@@ -375,12 +317,34 @@ fun HomeScreenPreview() {
                 ),
                 CreditAccountResponse(
                     creditCardLimit = "200000",
-                    creditCardOutStanding = 15000f
+                    creditCardOutStanding = 15000f,
+                    accountNumber = "1234567890123456",
+                    cardType = "MASTERCARD"
                 )
             ),
             shouldShowToast = false,
             errorMessage = "Oops! Something Went wrong! Please try again later",
-            isPullToRefreshInProgress = false
+            isPullToRefreshInProgress = false,
+            cardInfoList = mutableListOf(
+                CardInfo(
+                    position = 0,
+                    zIndex = 0f,
+                    offsetY = 0.dp,
+                    cardColor = R.color.card_color_1
+                ),
+                CardInfo(
+                    position = 1,
+                    zIndex = 1f,
+                    offsetY = 30.dp,
+                    cardColor = R.color.card_color_2
+                ),
+                CardInfo(
+                    position = 2,
+                    zIndex = 2f,
+                    offsetY = 60.dp,
+                    cardColor = R.color.card_color_3
+                )
+            )
         ),
         uiAction = {
 

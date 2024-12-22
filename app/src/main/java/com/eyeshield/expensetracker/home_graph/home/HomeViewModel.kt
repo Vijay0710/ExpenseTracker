@@ -1,10 +1,14 @@
 package com.eyeshield.expensetracker.home_graph.home
 
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.api.ApiResult
 import com.eyeshield.expensetracker.api.DataError
-import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountResponse
+import com.eyeshield.expensetracker.home_graph.home.data.CardInfo
+import com.eyeshield.expensetracker.home_graph.home.data.network.CreditAccountResponse
+import com.eyeshield.expensetracker.home_graph.home.domain.TransformCreditCards
 import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.HttpClient
@@ -17,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val transformCreditCards: TransformCreditCards
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         UiState()
@@ -49,6 +54,25 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }
+
+            is UiAction.TransformCreditCards -> {
+                transformCreditCards.getTransformedCardsForSelectedIndex(
+                    cardInfoList = _uiState.value.cardInfoList,
+                    index = action.index,
+                    selectedCard = action.selectedCard
+                )
+                // To Trigger state update in UI
+                updateCardInfoListAndSelectedCard(action.selectedCard)
+            }
+        }
+    }
+
+    private fun updateCardInfoListAndSelectedCard(selectedCard: CardInfo) {
+        _uiState.update {
+            it.copy(
+                cardInfoList = _uiState.value.cardInfoList,
+                selectedCard = selectedCard.copy()
+            )
         }
     }
 
@@ -151,11 +175,33 @@ class HomeViewModel @Inject constructor(
         val creditAccounts: List<CreditAccountResponse> = listOf(),
         val shouldShowToast: Boolean = false,
         val errorMessage: String = "",
-        val isPullToRefreshInProgress: Boolean = false
+        val isPullToRefreshInProgress: Boolean = false,
+        val selectedCard: CardInfo = CardInfo(),
+        val cardInfoList: MutableList<CardInfo> = mutableListOf(
+            CardInfo(
+                position = 0,
+                zIndex = 0f,
+                offsetY = 0.dp,
+                cardColor = R.color.card_color_1
+            ),
+            CardInfo(
+                position = 1,
+                zIndex = 1f,
+                offsetY = 30.dp,
+                cardColor = R.color.card_color_2
+            ),
+            CardInfo(
+                position = 2,
+                zIndex = 2f,
+                offsetY = 60.dp,
+                cardColor = R.color.card_color_3
+            )
+        )
     )
 
     sealed interface UiAction {
         data object OnTrackIndicatorFinished : UiAction
         data object OnPullToRefreshClicked : UiAction
+        data class TransformCreditCards(val index: Int, val selectedCard: CardInfo) : UiAction
     }
 }
