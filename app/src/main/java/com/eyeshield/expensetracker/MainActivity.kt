@@ -30,7 +30,7 @@ import com.eyeshield.expensetracker.application.AuthRoutes
 import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.auth.login.LoginScreen
 import com.eyeshield.expensetracker.auth.login.LoginViewModel
-import com.eyeshield.expensetracker.bottomnav.BottomNavigation
+import com.eyeshield.expensetracker.bottomNav.BottomNavigation
 import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.common.ObserveAsEvents
 import com.eyeshield.expensetracker.components.rememberCustomNavController

@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.bottomnav
+package com.eyeshield.expensetracker.bottomNav
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
 import com.eyeshield.expensetracker.components.rememberCustomNavController
-import com.eyeshield.expensetracker.database.orLoading
+import com.eyeshield.expensetracker.data.local.database.orLoading
 import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 import com.eyeshield.expensetracker.home_graph.home.HomeViewModel
 import com.eyeshield.expensetracker.settings.SettingsScreen

@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.bottomnav
+package com.eyeshield.expensetracker.bottomNav
 
 import android.content.Context
 import android.os.Bundle
@@ -21,7 +21,7 @@ class BottomTabNavController(context: Context) : CustomNavHostController(context
         }
     }
 
-    /** Since this App has 2 navController BottomTabNavController and ApplicationNavController when moving from one navController to another
+    /**
      * This instance of navController is cleared so later when I pop or come to this screen it will only restore the values which are provided by NavHostController like
      * currentDestination, route internal values of those class
      * To save and restore values even after recreation I need to override the below methods and handle it in my own class

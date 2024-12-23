@@ -28,11 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
-import com.eyeshield.expensetracker.home_graph.home.data.network.CreditAccountResponse
+import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountUIModel
 
 @Composable
 fun CreditCardContent(
-    accountInfo: CreditAccountResponse,
+    accountInfo: CreditAccountUIModel,
     onNavigate: (MainNavRoutes) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -46,7 +46,7 @@ fun CreditCardContent(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = accountInfo.formatCreditCardLimit(), style = TextStyle(
+                text = accountInfo.cardLimit, style = TextStyle(
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.nunito_bold)),
                     fontSize = 24.sp
@@ -70,7 +70,7 @@ fun CreditCardContent(
         }
 
         Text(
-            text = accountInfo.creditCardOutStanding.toString(), style = TextStyle(
+            text = accountInfo.creditCardOutStanding, style = TextStyle(
                 color = Color.White.copy(0.5f),
                 fontFamily = FontFamily(Font(R.font.nunito_regular)),
                 fontSize = 14.sp
@@ -85,7 +85,7 @@ fun CreditCardContent(
         ) {
             RadialGradientLinearProgressIndicator(
                 modifier = Modifier,
-                progress = accountInfo.calculateProgress(),
+                progress = accountInfo.progress,
                 startColor = colorResource(id = R.color.linear_progress_start),
                 endColor = colorResource(id = R.color.linear_progress_end)
             )
@@ -95,7 +95,7 @@ fun CreditCardContent(
             Text(
                 modifier = Modifier.weight(1f),
                 text = buildAnnotatedString {
-                    append(accountInfo.formatAccountNumberForDisplay())
+                    append(accountInfo.accountNumber)
                 }, style = TextStyle(
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.nunito_bold))
@@ -105,7 +105,7 @@ fun CreditCardContent(
 
             Icon(
                 modifier = Modifier.size(48.dp),
-                imageVector = ImageVector.vectorResource(id = accountInfo.getLogoType()),
+                imageVector = ImageVector.vectorResource(id = accountInfo.logo),
                 contentDescription = "Credit Card Logo",
                 tint = Color.Unspecified
             )

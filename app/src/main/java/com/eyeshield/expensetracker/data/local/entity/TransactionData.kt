@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.calendar_graph.data
+package com.eyeshield.expensetracker.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

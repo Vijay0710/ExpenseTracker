@@ -3,11 +3,10 @@ package com.eyeshield.expensetracker.calendar_graph
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
-import com.eyeshield.expensetracker.dao.TransactionDao
-import com.eyeshield.expensetracker.database.DatabaseResult
+import com.eyeshield.expensetracker.data.local.dao.TransactionDao
+import com.eyeshield.expensetracker.data.local.database.DatabaseResult
+import com.eyeshield.expensetracker.data.local.entity.TransactionData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
@@ -19,8 +18,7 @@ import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val transactionDao: TransactionDao,
-    private val client: HttpClient
+    private val transactionDao: TransactionDao
 ) : ViewModel() {
     var databaseResult = mutableStateOf<DatabaseResult<List<TransactionData>>?>(null)
 

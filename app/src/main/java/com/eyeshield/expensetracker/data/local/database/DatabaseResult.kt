@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.database
+package com.eyeshield.expensetracker.data.local.database
 
 enum class DatabaseStatus {
     SUCCESS,

@@ -30,9 +30,9 @@ import com.eyeshield.expensetracker.extensions.topPadding
 
 @Composable
 @Preview
-fun CardShimmer() {
+fun CardShimmer(modifier: Modifier = Modifier) {
     CreditCard(
-        modifier = Modifier,
+        modifier = modifier,
         cardBoxModifier = Modifier
             .background(color = colorResource(R.color.white).copy(0.5f))
             .shimmerLoadingAnimation(),

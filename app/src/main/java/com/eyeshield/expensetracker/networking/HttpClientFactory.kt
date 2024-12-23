@@ -3,9 +3,9 @@ package com.eyeshield.expensetracker.networking
 import com.eyeshield.expensetracker.BuildConfig
 import com.eyeshield.expensetracker.EncryptedSessionStorage
 import com.eyeshield.expensetracker.api.ApiResult
-import com.eyeshield.expensetracker.auth.AccessTokenRequest
-import com.eyeshield.expensetracker.auth.AccessTokenResponse
-import com.eyeshield.expensetracker.auth.AuthInfo
+import com.eyeshield.expensetracker.auth.data.AccessTokenRequest
+import com.eyeshield.expensetracker.auth.data.AccessTokenResponse
+import com.eyeshield.expensetracker.auth.data.AuthInfo
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout

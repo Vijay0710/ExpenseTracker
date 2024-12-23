@@ -2,7 +2,7 @@ package com.eyeshield.expensetracker
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import com.eyeshield.expensetracker.auth.AuthInfo
+import com.eyeshield.expensetracker.auth.data.AuthInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString

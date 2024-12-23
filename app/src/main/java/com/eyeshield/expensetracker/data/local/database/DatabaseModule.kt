@@ -1,8 +1,9 @@
-package com.eyeshield.expensetracker.database
+package com.eyeshield.expensetracker.data.local.database
 
 import android.content.Context
 import androidx.room.Room
-import com.eyeshield.expensetracker.dao.TransactionDao
+import com.eyeshield.expensetracker.data.local.dao.CreditAccountDao
+import com.eyeshield.expensetracker.data.local.dao.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,11 +22,17 @@ object DatabaseModule {
             appContext,
             ExpenseTrackDatabase::class.java,
             "expensetracker.db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
+
     @Provides
-    fun providesTransactionDao(database: ExpenseTrackDatabase) : TransactionDao {
+    fun providesTransactionDao(database: ExpenseTrackDatabase): TransactionDao {
         return database.TransactionDao()
+    }
+
+    @Provides
+    fun providesCreditAccountDao(database: ExpenseTrackDatabase): CreditAccountDao {
+        return database.CreditAccountDao()
     }
 
 }

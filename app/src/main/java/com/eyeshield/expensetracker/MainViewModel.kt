@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyeshield.expensetracker.api.ApiResult
-import com.eyeshield.expensetracker.auth.AccessTokenRequest
-import com.eyeshield.expensetracker.auth.AccessTokenResponse
+import com.eyeshield.expensetracker.auth.data.AccessTokenRequest
+import com.eyeshield.expensetracker.auth.data.AccessTokenResponse
 import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.HttpClient

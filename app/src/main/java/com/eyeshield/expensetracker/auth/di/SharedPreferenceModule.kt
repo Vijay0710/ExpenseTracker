@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.auth.domain
+package com.eyeshield.expensetracker.auth.di
 
 import android.content.Context
 import android.content.SharedPreferences

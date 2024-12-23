@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.auth
+package com.eyeshield.expensetracker.auth.data
 
 import kotlinx.serialization.Serializable
 

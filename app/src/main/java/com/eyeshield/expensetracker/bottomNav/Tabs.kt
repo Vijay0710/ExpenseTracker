@@ -1,4 +1,4 @@
-package com.eyeshield.expensetracker.bottomnav
+package com.eyeshield.expensetracker.bottomNav
 
 import com.eyeshield.expensetracker.R
 import kotlinx.serialization.Serializable

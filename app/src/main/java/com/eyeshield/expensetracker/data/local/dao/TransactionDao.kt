@@ -1,9 +1,9 @@
-package com.eyeshield.expensetracker.dao
+package com.eyeshield.expensetracker.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
+import com.eyeshield.expensetracker.data.local.entity.TransactionData
 
 @Dao
 interface TransactionDao {

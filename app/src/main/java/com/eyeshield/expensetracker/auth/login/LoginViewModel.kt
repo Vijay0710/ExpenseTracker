@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.eyeshield.expensetracker.EncryptedSessionStorage
 import com.eyeshield.expensetracker.api.ApiResult
 import com.eyeshield.expensetracker.api.DataError
-import com.eyeshield.expensetracker.auth.AuthInfo
+import com.eyeshield.expensetracker.auth.data.AuthInfo
 import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.HttpClient

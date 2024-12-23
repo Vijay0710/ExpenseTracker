@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
-import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
-import com.eyeshield.expensetracker.database.DatabaseStatus
+import com.eyeshield.expensetracker.data.local.database.DatabaseStatus
+import com.eyeshield.expensetracker.data.local.entity.TransactionData
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetailsShimmer
 

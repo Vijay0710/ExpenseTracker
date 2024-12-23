@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.calendar_graph.data.TransactionData
+import com.eyeshield.expensetracker.data.local.entity.TransactionData
 
 @Composable
 fun Transactions() {

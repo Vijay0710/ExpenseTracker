@@ -9,10 +9,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,13 +55,14 @@ import androidx.compose.ui.zIndex
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.common.AnimatedToast
+import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.home_graph.home.components.CardFace
 import com.eyeshield.expensetracker.home_graph.home.components.CardShimmer
 import com.eyeshield.expensetracker.home_graph.home.components.CreditCard
 import com.eyeshield.expensetracker.home_graph.home.components.CreditCardContent
 import com.eyeshield.expensetracker.home_graph.home.components.Transactions
 import com.eyeshield.expensetracker.home_graph.home.data.CardInfo
-import com.eyeshield.expensetracker.home_graph.home.data.network.CreditAccountResponse
+import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountUIModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,12 +106,12 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(40.dp)
         ) {
             item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .bottomPadding(40.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -163,10 +162,13 @@ fun HomeScreen(
 
             item {
                 if (uiState.isLoading) {
-                    CardShimmer()
+                    CardShimmer(
+                        modifier = Modifier.bottomPadding(40.dp)
+                    )
                 } else {
                     Box(
                         modifier = Modifier
+                            .bottomPadding(40.dp)
                             .graphicsLayer {
                                 rotationY = rotationYAxis
                                 cameraDistance = 20f
@@ -184,19 +186,6 @@ fun HomeScreen(
                                         rotationYAxis = 0f
                                     },
                                 )
-
-                                detectVerticalDragGestures(
-                                    onVerticalDrag = { _, dragAmount ->
-                                        rotationYAxis =
-                                            (rotationYAxis + dragAmount / 5).coerceIn(-20f, 20f)
-                                    },
-                                    onDragEnd = {
-                                        rotationYAxis = 0f
-                                    },
-                                    onDragCancel = {
-                                        rotationYAxis = 0f
-                                    }
-                                )
                             }
                     ) {
                         uiState.creditAccounts.zip(uiState.cardInfoList)
@@ -212,7 +201,7 @@ fun HomeScreen(
                                         targetValue = cardPositionAndOffsetState.second.offsetY,
                                         label = "Y Offset Animation",
                                         animationSpec = tween(
-                                            500,
+                                            durationMillis = 500,
                                             easing = EaseIn,
                                             delayMillis = yOffsetDelay
                                         )
@@ -247,6 +236,7 @@ fun HomeScreen(
                                             } else {
                                                 uiAction(
                                                     HomeViewModel.UiAction.TransformCreditCards(
+                                                        id = cardPositionAndOffsetState.first.id,
                                                         index = index,
                                                         selectedCard = cardPositionAndOffsetState.second
                                                     )
@@ -270,9 +260,11 @@ fun HomeScreen(
             }
 
             item {
-                if (!uiState.isLoading && uiState.creditAccounts.size > 1) {
+                if (uiState.creditAccounts.size > 1) {
                     Spacer(
-                        modifier = Modifier.height(5.dp)
+                        modifier = Modifier
+                            .bottomPadding(30.dp)
+                            .height(5.dp * uiState.creditAccounts.size)
                     )
                 }
             }
@@ -282,8 +274,6 @@ fun HomeScreen(
             }
         }
     }
-
-
 
     AnimatedToast(
         shouldShowToast = uiState.shouldShowToast,
@@ -307,19 +297,29 @@ fun HomeScreenPreview() {
         uiState = HomeViewModel.UiState(
             isLoading = false,
             creditAccounts = listOf(
-                CreditAccountResponse(
-                    creditCardLimit = "200000",
-                    creditCardOutStanding = 15000f
+                CreditAccountUIModel(
+                    id = "1234",
+                    accountNumber = "•••• •••• •••• 1234",
+                    progress = 0.6f,
+                    cardLimit = "₹ 2,00,000",
+                    logo = R.drawable.visa_logo,
+                    creditCardOutStanding = "15000.00"
                 ),
-                CreditAccountResponse(
-                    creditCardLimit = "200000",
-                    creditCardOutStanding = 15000f
+                CreditAccountUIModel(
+                    id = "1234",
+                    accountNumber = "•••• •••• •••• 1234",
+                    progress = 0.6f,
+                    cardLimit = "₹ 2,00,000",
+                    logo = R.drawable.visa_logo,
+                    creditCardOutStanding = "15000.00"
                 ),
-                CreditAccountResponse(
-                    creditCardLimit = "200000",
-                    creditCardOutStanding = 15000f,
-                    accountNumber = "1234567890123456",
-                    cardType = "MASTERCARD"
+                CreditAccountUIModel(
+                    id = "1234",
+                    accountNumber = "•••• •••• •••• 1234",
+                    progress = 0.4f,
+                    cardLimit = "₹ 2,00,000",
+                    logo = R.drawable.visa_logo,
+                    creditCardOutStanding = "15000.00"
                 )
             ),
             shouldShowToast = false,
