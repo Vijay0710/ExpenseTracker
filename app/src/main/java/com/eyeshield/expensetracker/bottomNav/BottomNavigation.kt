@@ -2,7 +2,8 @@ package com.eyeshield.expensetracker.bottomNav
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,14 +31,22 @@ import com.eyeshield.expensetracker.application.ApplicationNavController
 import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
+import com.eyeshield.expensetracker.common.NetworkConnectivity
 import com.eyeshield.expensetracker.components.rememberCustomNavController
 import com.eyeshield.expensetracker.data.local.database.orLoading
+import com.eyeshield.expensetracker.extensions.bottomPadding
+import com.eyeshield.expensetracker.extensions.horizontalPadding
+import com.eyeshield.expensetracker.extensions.topPadding
 import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 import com.eyeshield.expensetracker.home_graph.home.HomeViewModel
 import com.eyeshield.expensetracker.settings.SettingsScreen
 
 @Composable
-fun BottomNavigation(mainNavController: ApplicationNavController) {
+fun BottomNavigation(
+    mainNavController: ApplicationNavController,
+    isOffline: Boolean,
+    shouldShowNetworkStatusIndicator: Boolean
+) {
     val bottomNavController = rememberCustomNavController<BottomTabNavController>()
 
     val bottomNavItems = remember {
@@ -50,6 +60,12 @@ fun BottomNavigation(mainNavController: ApplicationNavController) {
     }
 
     Scaffold(
+        topBar = {
+            NetworkConnectivity(
+                isOffline = isOffline,
+                shouldShowNetworkStatusIndicator = shouldShowNetworkStatusIndicator
+            )
+        },
         bottomBar = {
             NavigationBar(containerColor = Color.Transparent) {
                 bottomNavItems.forEachIndexed { _, item ->
@@ -85,7 +101,12 @@ fun BottomNavigation(mainNavController: ApplicationNavController) {
         NavHost(
             modifier = Modifier
                 .background(color = colorResource(id = R.color.shadow_white))
-                .padding(innerPadding),
+                .topPadding(top = innerPadding.calculateTopPadding() - 10.dp)
+                .horizontalPadding(
+                    horizontal = innerPadding.calculateStartPadding(LayoutDirection.Ltr) +
+                            innerPadding.calculateEndPadding(LayoutDirection.Ltr)
+                )
+                .bottomPadding(innerPadding.calculateBottomPadding()),
             navController = bottomNavController,
             startDestination = Tabs.HomeScreen,
         ) {

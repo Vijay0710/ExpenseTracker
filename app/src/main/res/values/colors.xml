@@ -14,6 +14,10 @@
     <color name="username">#121A2E</color>
     <color name="notification_pressed_state">#333333</color>
 
+    <!-- -->
+    <color name="network_available_background">#228B22</color>
+    <color name="network_lost_background">#333131</color>
+
     <color name="credit_card_number">#FDFDFD</color>
     <color name="card_color_1">@color/graphite_gray</color>
     <color name="card_color_2">#3B556E</color>

@@ -86,7 +86,7 @@ fun HomeScreen(
     }
 
     PullToRefreshBox(
-        modifier = Modifier,
+        modifier = Modifier.padding(24.dp),
         isRefreshing = uiState.isPullToRefreshInProgress,
         onRefresh = {
             uiAction(HomeViewModel.UiAction.OnPullToRefreshClicked)
@@ -104,8 +104,7 @@ fun HomeScreen(
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+                .fillMaxSize(),
         ) {
             item {
                 Row(
