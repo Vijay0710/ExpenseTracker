@@ -30,3 +30,11 @@ val EyeClosed: ImageVector
 val AlertIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_alert)
+
+val ChevronForward: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.chevron_forward)
+
+val AnalyzeIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.ic_analyze)

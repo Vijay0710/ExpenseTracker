@@ -7,6 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +38,8 @@ import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.auth.login.LoginScreen
 import com.eyeshield.expensetracker.auth.login.LoginViewModel
 import com.eyeshield.expensetracker.bottomNav.BottomNavigation
+import com.eyeshield.expensetracker.bottomNav.BottomTabNavController
+import com.eyeshield.expensetracker.bottomNav.Tabs
 import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.common.ObserveAsEvents
 import com.eyeshield.expensetracker.components.rememberCustomNavController
@@ -76,8 +81,30 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val navController = rememberCustomNavController<ApplicationNavController>()
+            val bottomNavController = rememberCustomNavController<BottomTabNavController>()
             var startDestination by remember { mutableStateOf<MainNavRoutes>(MainNavRoutes.AuthRoute) }
             var surfaceBackGround by remember { mutableIntStateOf(R.color.login_screen_background) }
+
+            var bottomNavigationContainerColor by remember { mutableIntStateOf(R.color.login_screen_background) }
+            var bottomNavigationIconsColor by remember { mutableIntStateOf(R.color.black) }
+
+            val bottomNavigationContainerColorAnimation by animateColorAsState(
+                targetValue = colorResource(bottomNavigationContainerColor),
+                label = "Bottom Navigation Container Transition Animation",
+                animationSpec = tween(500, easing = FastOutSlowInEasing)
+            )
+
+            val bottomNavigationIconColorAnimation by animateColorAsState(
+                targetValue = colorResource(bottomNavigationIconsColor),
+                label = "Bottom Navigation Container Transition Animation",
+                animationSpec = tween(500, easing = FastOutSlowInEasing)
+            )
+
+            val surfaceBackGroundColorAnimation by animateColorAsState(
+                targetValue = colorResource(surfaceBackGround),
+                label = "Surface Background Transition Animation",
+                animationSpec = tween(500, easing = FastOutSlowInEasing)
+            )
 
             var isOffline by remember { mutableStateOf(false) }
             var shouldShowNetworkStatusIndicator by remember { mutableStateOf(false) }
@@ -123,26 +150,45 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            navController.addOnDestinationChangedListener { _, navDestination, _ ->
-                surfaceBackGround = when (navDestination.route) {
-                    AuthRoutes.WelcomeScreen.serializer().descriptor.serialName,
-                    AuthRoutes.LoginScreen.serializer().descriptor.serialName -> {
-                        R.color.login_screen_background
-                    }
+            LaunchedEffect(Unit) {
+                navController.addOnDestinationChangedListener { _, navDestination, _ ->
+                    surfaceBackGround = when (navDestination.route) {
+                        AuthRoutes.WelcomeScreen.serializer().descriptor.serialName,
+                        AuthRoutes.LoginScreen.serializer().descriptor.serialName -> {
+                            R.color.login_screen_background
+                        }
 
-                    MainNavRoutes.BottomNavigation.serializer().descriptor.serialName -> {
-                        R.color.shadow_white
-                    }
+                        MainNavRoutes.BottomNavigation.serializer().descriptor.serialName -> {
+                            R.color.shadow_white
+                        }
 
-                    else -> {
-                        R.color.shadow_white
+                        else -> {
+                            R.color.shadow_white
+                        }
+                    }
+                }
+
+                bottomNavController.addOnDestinationChangedListener { _, navDestination, _ ->
+                    surfaceBackGround = when (navDestination.route) {
+                        Tabs.CardScreen.serializer().descriptor.serialName -> {
+                            bottomNavigationIconsColor = R.color.white
+                            bottomNavigationContainerColor = R.color.login_screen_background
+                            R.color.card_screen_background
+                        }
+
+                        else -> {
+                            bottomNavigationIconsColor = R.color.black
+                            bottomNavigationContainerColor = R.color.shadow_white
+                            R.color.shadow_white
+                        }
                     }
                 }
             }
 
+
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = colorResource(id = surfaceBackGround)
+                color = surfaceBackGroundColorAnimation
             ) {
                 if (!viewModel.state.isCheckingAuth) {
                     NavHost(
@@ -163,8 +209,12 @@ class MainActivity : ComponentActivity() {
 
                             BottomNavigation(
                                 mainNavController = navController,
+                                bottomNavController = bottomNavController,
                                 isOffline = isOffline,
-                                shouldShowNetworkStatusIndicator = shouldShowNetworkStatusIndicator
+                                shouldShowNetworkStatusIndicator = shouldShowNetworkStatusIndicator,
+                                containerColor = surfaceBackGroundColorAnimation,
+                                bottomNavigationContainerColor = bottomNavigationContainerColorAnimation,
+                                bottomNavigationIconsColor = bottomNavigationIconColorAnimation,
                             )
                         }
 

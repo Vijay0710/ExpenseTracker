@@ -15,10 +15,14 @@ data class CreditAccountDTO(
     val creditCardLimit: String? = null,
     @JsonNames("credit_card_due_date")
     val creditCardDueDate: String? = null,
+    @JsonNames("billing_cycle")
+    val billingCycle: String? = null,
     @JsonNames("credit_card_outstanding")
     val creditCardOutStanding: Float? = null,
     @JsonNames("account_number")
     val accountNumber: String? = null,
     @JsonNames("card_type")
-    val cardType: String? = null
+    val cardType: String? = null,
+    @JsonNames("total_reward_points")
+    val totalRewardPoints: String? = null
 )

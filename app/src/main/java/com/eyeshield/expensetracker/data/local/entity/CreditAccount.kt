@@ -13,5 +13,7 @@ data class CreditAccount(
     val creditCardOutStanding: Float? = null,
     val accountNumber: String? = null,
     val cardType: String? = null,
+    val billingCycle: String? = null,
+    val totalRewardPoints: String? = null,
     val isSelected: Boolean = false
 )

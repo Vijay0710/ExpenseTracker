@@ -51,11 +51,11 @@ import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetail
 
 @Composable
 fun CalendarScreen(
+    modifier: Modifier = Modifier,
     getAllTransactions: List<TransactionData>?,
     databaseStatus: DatabaseStatus,
     onNavigate: (MainNavRoutes) -> Unit
 ) {
-
     val items = remember(getAllTransactions) {
         mutableStateListOf<TransactionData>().apply {
             if (getAllTransactions?.isNotEmpty() == true)
@@ -69,7 +69,7 @@ fun CalendarScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(15.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -103,7 +103,6 @@ fun CalendarScreen(
             }
         }
     }
-
 
     Box(
         modifier = Modifier

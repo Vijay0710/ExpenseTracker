@@ -78,7 +78,7 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth(),
             color = Color.White,
-            shadowElevation = 32.dp,
+            shadowElevation = 12.dp,
             tonalElevation = 32.dp,
             shape = RoundedCornerShape(30.dp)
         ) {

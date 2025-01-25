@@ -1,7 +1,6 @@
 package com.eyeshield.expensetracker.bottomNav
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.size
@@ -16,7 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
@@ -25,14 +25,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.add.AddScreen
 import com.eyeshield.expensetracker.application.ApplicationNavController
 import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
+import com.eyeshield.expensetracker.cards.CardsViewModel
 import com.eyeshield.expensetracker.common.NetworkConnectivity
-import com.eyeshield.expensetracker.components.rememberCustomNavController
 import com.eyeshield.expensetracker.data.local.database.orLoading
 import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.extensions.horizontalPadding
@@ -40,14 +39,19 @@ import com.eyeshield.expensetracker.extensions.topPadding
 import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 import com.eyeshield.expensetracker.home_graph.home.HomeViewModel
 import com.eyeshield.expensetracker.settings.SettingsScreen
+import com.eyeshield.expensetracker.utils.hasCameraNotch
 
 @Composable
 fun BottomNavigation(
     mainNavController: ApplicationNavController,
+    bottomNavController: BottomTabNavController,
+    containerColor: Color,
     isOffline: Boolean,
-    shouldShowNetworkStatusIndicator: Boolean
+    shouldShowNetworkStatusIndicator: Boolean,
+    bottomNavigationContainerColor: Color,
+    bottomNavigationIconsColor: Color
 ) {
-    val bottomNavController = rememberCustomNavController<BottomTabNavController>()
+    val context = LocalContext.current
 
     val bottomNavItems = remember {
         listOf(
@@ -67,7 +71,11 @@ fun BottomNavigation(
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = Color.Transparent) {
+            NavigationBar(
+                modifier = Modifier.pointerInput(Unit) {},
+                containerColor = bottomNavigationContainerColor,
+                contentColor = Color.Transparent
+            ) {
                 bottomNavItems.forEachIndexed { _, item ->
                     NavigationBarItem(
                         modifier = Modifier,
@@ -89,19 +97,20 @@ fun BottomNavigation(
                             )
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = colorResource(id = R.color.shadow_white),
-                            selectedIconColor = Color.Black,
+                            indicatorColor = Color.Transparent,
+                            selectedIconColor = bottomNavigationIconsColor,
                             unselectedIconColor = Color.Gray
                         )
                     )
                 }
             }
-        }
+        },
+        containerColor = containerColor
     ) { innerPadding ->
         NavHost(
             modifier = Modifier
-                .background(color = colorResource(id = R.color.shadow_white))
                 .topPadding(top = innerPadding.calculateTopPadding() - 10.dp)
+                .topPadding(if (context.hasCameraNotch()) 10.dp else 0.dp)
                 .horizontalPadding(
                     horizontal = innerPadding.calculateStartPadding(LayoutDirection.Ltr) +
                             innerPadding.calculateEndPadding(LayoutDirection.Ltr)
@@ -151,7 +160,13 @@ fun BottomNavigation(
                 BackHandler {
                     bottomNavController.popUpToHomeScreen()
                 }
-                CardScreen()
+                val viewModel = hiltViewModel<CardsViewModel>()
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+                CardScreen(
+                    uiState = uiState,
+                    uiAction = viewModel::onUiAction,
+                )
             }
             composable<Tabs.SettingsScreen> {
                 BackHandler {

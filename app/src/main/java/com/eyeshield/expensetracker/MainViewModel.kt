@@ -50,6 +50,7 @@ class MainViewModel @Inject constructor(
                                 }
                             }
                         } else {
+                            updateIsCheckingAuth(false)
                             handleVerifyTokenFailure()
                         }
                     }

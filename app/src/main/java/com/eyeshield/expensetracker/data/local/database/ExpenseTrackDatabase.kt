@@ -12,7 +12,7 @@ import com.eyeshield.expensetracker.data.local.entity.TransactionData
         TransactionData::class,
         CreditAccount::class
     ],
-    version = 3
+    version = 4
 )
 abstract class ExpenseTrackDatabase : RoomDatabase() {
 

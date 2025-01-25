@@ -13,6 +13,7 @@
     <color name="greeting">#9F9C9C</color>
     <color name="username">#121A2E</color>
     <color name="notification_pressed_state">#333333</color>
+    <color name="lapis_lazuli">#005C8A</color>
 
     <!-- -->
     <color name="network_available_background">#228B22</color>
@@ -78,5 +79,10 @@
     <!-- Record Expense Screen  -->
     <color name="record_expense_bg">#090A0B</color>
     <color name="pricing_type">#67696D</color>
+
+    <!-- Cards Screen -->
+    <color name="card_screen_background">#F5F2ED</color>
+    <color name="check_out_transactions">@color/lapis_lazuli</color>
+    <color name="analyse_spends">@color/lapis_lazuli</color>
 
 </resources>
