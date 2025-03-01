@@ -39,7 +39,6 @@ import com.eyeshield.expensetracker.auth.login.LoginScreen
 import com.eyeshield.expensetracker.auth.login.LoginViewModel
 import com.eyeshield.expensetracker.bottomNav.BottomNavigation
 import com.eyeshield.expensetracker.bottomNav.BottomTabNavController
-import com.eyeshield.expensetracker.bottomNav.Tabs
 import com.eyeshield.expensetracker.calendar_graph.expense.AddExpenseScreen
 import com.eyeshield.expensetracker.common.ObserveAsEvents
 import com.eyeshield.expensetracker.components.rememberCustomNavController
@@ -84,21 +83,6 @@ class MainActivity : ComponentActivity() {
             val bottomNavController = rememberCustomNavController<BottomTabNavController>()
             var startDestination by remember { mutableStateOf<MainNavRoutes>(MainNavRoutes.AuthRoute) }
             var surfaceBackGround by remember { mutableIntStateOf(R.color.login_screen_background) }
-
-            var bottomNavigationContainerColor by remember { mutableIntStateOf(R.color.login_screen_background) }
-            var bottomNavigationIconsColor by remember { mutableIntStateOf(R.color.black) }
-
-            val bottomNavigationContainerColorAnimation by animateColorAsState(
-                targetValue = colorResource(bottomNavigationContainerColor),
-                label = "Bottom Navigation Container Transition Animation",
-                animationSpec = tween(500, easing = FastOutSlowInEasing)
-            )
-
-            val bottomNavigationIconColorAnimation by animateColorAsState(
-                targetValue = colorResource(bottomNavigationIconsColor),
-                label = "Bottom Navigation Container Transition Animation",
-                animationSpec = tween(500, easing = FastOutSlowInEasing)
-            )
 
             val surfaceBackGroundColorAnimation by animateColorAsState(
                 targetValue = colorResource(surfaceBackGround),
@@ -167,22 +151,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-
-                bottomNavController.addOnDestinationChangedListener { _, navDestination, _ ->
-                    surfaceBackGround = when (navDestination.route) {
-                        Tabs.CardScreen.serializer().descriptor.serialName -> {
-                            bottomNavigationIconsColor = R.color.white
-                            bottomNavigationContainerColor = R.color.login_screen_background
-                            R.color.card_screen_background
-                        }
-
-                        else -> {
-                            bottomNavigationIconsColor = R.color.black
-                            bottomNavigationContainerColor = R.color.shadow_white
-                            R.color.shadow_white
-                        }
-                    }
-                }
             }
 
 
@@ -213,8 +181,6 @@ class MainActivity : ComponentActivity() {
                                 isOffline = isOffline,
                                 shouldShowNetworkStatusIndicator = shouldShowNetworkStatusIndicator,
                                 containerColor = surfaceBackGroundColorAnimation,
-                                bottomNavigationContainerColor = bottomNavigationContainerColorAnimation,
-                                bottomNavigationIconsColor = bottomNavigationIconColorAnimation,
                             )
                         }
 

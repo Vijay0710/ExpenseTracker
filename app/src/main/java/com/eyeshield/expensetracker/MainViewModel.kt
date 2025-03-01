@@ -5,26 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eyeshield.expensetracker.api.ApiResult
-import com.eyeshield.expensetracker.auth.data.AccessTokenRequest
-import com.eyeshield.expensetracker.auth.data.AccessTokenResponse
 import com.eyeshield.expensetracker.networking.connectivity.ConnectivityObserver
-import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val sessionStorage: EncryptedSessionStorage,
-    private val client: HttpClient,
     private val connectivityObserver: ConnectivityObserver,
     private val apiScope: CoroutineScope
 ) : ViewModel() {
@@ -86,27 +78,9 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun validateRefreshToken() {
-        val result = client.post<AccessTokenRequest, AccessTokenResponse>(
-            route = "/auth/verify_token",
-            body = AccessTokenRequest(
-                refresh_token = sessionStorage.get()?.refreshToken.orEmpty()
-            )
-        )
-
-        withContext(Dispatchers.Main) {
-            when (result) {
-                is ApiResult.Success -> {
-                    updateLoginInStatus(true)
-                    _uiEvent.send(UIEvent.OnVerifyTokenSuccess)
-                }
-
-                is ApiResult.ApiError -> {
-                    handleVerifyTokenFailure()
-                }
-            }
-            updateIsCheckingAuth(false)
-        }
-
+        updateLoginInStatus(true)
+        _uiEvent.send(UIEvent.OnVerifyTokenSuccess)
+        updateIsCheckingAuth(false)
     }
 
     private suspend fun handleVerifyTokenFailure() {

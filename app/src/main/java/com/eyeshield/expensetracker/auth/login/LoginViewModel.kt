@@ -7,13 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyeshield.expensetracker.EncryptedSessionStorage
-import com.eyeshield.expensetracker.api.ApiResult
-import com.eyeshield.expensetracker.api.DataError
-import com.eyeshield.expensetracker.auth.data.AuthInfo
-import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.request.forms.FormPart
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -21,7 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val client: HttpClient,
     private val sessionStorage: EncryptedSessionStorage
 ) : ViewModel() {
 
@@ -69,51 +62,7 @@ class LoginViewModel @Inject constructor(
 
     private fun doLoginCall() {
         viewModelScope.launch {
-            val result = client.post<Any, AuthInfo>(
-                route = "/auth/token",
-                formPart = arrayOf(
-                    FormPart("grant_type", "password"),
-                    FormPart("username", loginState.email),
-                    FormPart("password", loginState.password)
-                )
-            )
-
-            when (result) {
-                is ApiResult.Success -> {
-                    sessionStorage.set(info = result.data)
-                    eventChannel.send(UiEvent.OnLoginSuccess)
-                }
-
-                is ApiResult.ApiError -> {
-                    loginState = loginState.copy(
-                        shouldShowToast = true
-                    )
-
-                    when (result.error) {
-                        DataError.Network.REQUEST_TIMED_OUT -> {
-                            updateErrorMessage(
-                                message = "Hmm, looks like we're taking too long to get back to you. Please give us a moment and try again shortly."
-                            )
-                        }
-
-                        DataError.Network.UNAUTHORIZED -> {
-                            updateErrorMessage("Oops! Your credentials seem to have taken a little vacation. Please check them and try again.")
-                        }
-
-                        DataError.Network.NO_INTERNET -> {
-                            updateErrorMessage(
-                                message = "Looks like we’ve lost connection to the internet! Kindly ensure you're connected and give it another shot."
-                            )
-                        }
-
-                        else -> {
-                            updateErrorMessage(
-                                message = "Something went wrong on our end! Our team is on it, armed with coffee and determination!"
-                            )
-                        }
-                    }
-                }
-            }
+            eventChannel.send(UiEvent.OnLoginSuccess)
 
             loginState = loginState.copy(
                 shouldShowLoader = false

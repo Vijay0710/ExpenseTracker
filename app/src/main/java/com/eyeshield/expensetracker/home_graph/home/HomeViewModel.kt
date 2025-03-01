@@ -4,19 +4,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.api.ApiResult
 import com.eyeshield.expensetracker.data.local.dao.CreditAccountDao
 import com.eyeshield.expensetracker.data.local.entity.CreditAccount
-import com.eyeshield.expensetracker.data.mapper.toEntityModelList
-import com.eyeshield.expensetracker.data.mapper.toUIModelListFromDTO
 import com.eyeshield.expensetracker.data.mapper.toUIModelListFromEntity
-import com.eyeshield.expensetracker.data.remote.CreditAccountDTO
 import com.eyeshield.expensetracker.home_graph.home.data.CardInfo
 import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountUIModel
 import com.eyeshield.expensetracker.home_graph.home.domain.TransformCreditCards
-import com.eyeshield.expensetracker.networking.post
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,7 +22,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val client: HttpClient,
     private val transformCreditCards: TransformCreditCards,
     private val creditAccountDao: CreditAccountDao
 ) : ViewModel() {
@@ -130,22 +123,6 @@ class HomeViewModel @Inject constructor(
         isPullToRefresh: Boolean = false
     ) {
         shouldShowLoader(true)
-
-        val result = client.post<Any, List<CreditAccountDTO>>(
-            route = "/accounts/credit_account_info"
-        )
-
-        when (result) {
-
-            is ApiResult.Success -> {
-                updateCreditAccounts(result.data.toUIModelListFromDTO())
-                insertCreditAccounts(result.data.toEntityModelList())
-            }
-
-            is ApiResult.ApiError -> {
-                updateToastMessageAndVisibility(result.error.message)
-            }
-        }
 
         shouldShowLoader(false)
 

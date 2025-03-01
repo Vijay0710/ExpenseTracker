@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
@@ -25,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.add.AddScreen
 import com.eyeshield.expensetracker.application.ApplicationNavController
 import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
@@ -48,8 +50,6 @@ fun BottomNavigation(
     containerColor: Color,
     isOffline: Boolean,
     shouldShowNetworkStatusIndicator: Boolean,
-    bottomNavigationContainerColor: Color,
-    bottomNavigationIconsColor: Color
 ) {
     val context = LocalContext.current
 
@@ -73,7 +73,7 @@ fun BottomNavigation(
         bottomBar = {
             NavigationBar(
                 modifier = Modifier.pointerInput(Unit) {},
-                containerColor = bottomNavigationContainerColor,
+                containerColor = colorResource(R.color.shadow_white),
                 contentColor = Color.Transparent
             ) {
                 bottomNavItems.forEachIndexed { _, item ->
@@ -98,7 +98,6 @@ fun BottomNavigation(
                         },
                         colors = NavigationBarItemDefaults.colors(
                             indicatorColor = Color.Transparent,
-                            selectedIconColor = bottomNavigationIconsColor,
                             unselectedIconColor = Color.Gray
                         )
                     )
