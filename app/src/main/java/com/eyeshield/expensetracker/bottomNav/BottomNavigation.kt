@@ -1,8 +1,11 @@
 package com.eyeshield.expensetracker.bottomNav
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -12,16 +15,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -33,23 +36,16 @@ import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
 import com.eyeshield.expensetracker.cards.CardsViewModel
-import com.eyeshield.expensetracker.common.NetworkConnectivity
 import com.eyeshield.expensetracker.data.local.database.orLoading
-import com.eyeshield.expensetracker.extensions.bottomPadding
-import com.eyeshield.expensetracker.extensions.horizontalPadding
-import com.eyeshield.expensetracker.extensions.topPadding
 import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 import com.eyeshield.expensetracker.home_graph.home.HomeViewModel
 import com.eyeshield.expensetracker.settings.SettingsScreen
-import com.eyeshield.expensetracker.utils.hasCameraNotch
 
 @Composable
 fun BottomNavigation(
     mainNavController: ApplicationNavController,
     bottomNavController: BottomTabNavController,
-    containerColor: Color,
-    isOffline: Boolean,
-    shouldShowNetworkStatusIndicator: Boolean,
+    containerColor: Color
 ) {
     val context = LocalContext.current
 
@@ -63,17 +59,39 @@ fun BottomNavigation(
         )
     }
 
+    var currentScreenColor by remember {
+        mutableStateOf(containerColor)
+    }
+
+    val currentScreenColorAnimation by animateColorAsState(
+        targetValue = currentScreenColor,
+        label = "Surface Background Transition Animation",
+        animationSpec = tween(500, easing = FastOutSlowInEasing)
+    )
+
+
+    LaunchedEffect(containerColor) {
+        currentScreenColor = containerColor
+    }
+
+
+    val onBottomNavTabsChangedListener: (Tabs) -> Unit = {
+        currentScreenColor = when (it) {
+            Tabs.CardScreen -> {
+                Color(ContextCompat.getColor(context, R.color.card_screen_background))
+            }
+
+            else -> {
+                Color(ContextCompat.getColor(context, R.color.shadow_white))
+            }
+        }
+    }
+
+
     Scaffold(
-        topBar = {
-            NetworkConnectivity(
-                isOffline = isOffline,
-                shouldShowNetworkStatusIndicator = shouldShowNetworkStatusIndicator
-            )
-        },
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.pointerInput(Unit) {},
-                containerColor = colorResource(R.color.shadow_white),
+                containerColor = currentScreenColorAnimation,
                 contentColor = Color.Transparent
             ) {
                 bottomNavItems.forEachIndexed { _, item ->
@@ -87,6 +105,7 @@ fun BottomNavigation(
                                 bottomNavController.navigate(
                                     route = item
                                 )
+                                onBottomNavTabsChangedListener(item)
                             }
                         },
                         icon = {
@@ -104,17 +123,12 @@ fun BottomNavigation(
                 }
             }
         },
-        containerColor = containerColor
+        containerColor = currentScreenColorAnimation
     ) { innerPadding ->
         NavHost(
             modifier = Modifier
-                .topPadding(top = innerPadding.calculateTopPadding() - 10.dp)
-                .topPadding(if (context.hasCameraNotch()) 10.dp else 0.dp)
-                .horizontalPadding(
-                    horizontal = innerPadding.calculateStartPadding(LayoutDirection.Ltr) +
-                            innerPadding.calculateEndPadding(LayoutDirection.Ltr)
-                )
-                .bottomPadding(innerPadding.calculateBottomPadding()),
+                .padding(innerPadding)
+                .safeDrawingPadding(),
             navController = bottomNavController,
             startDestination = Tabs.HomeScreen,
         ) {

@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
+import com.eyeshield.expensetracker.extensions.topPadding
 import com.eyeshield.expensetracker.utils.CalendarUtils
 import kotlinx.coroutines.launch
 
@@ -73,13 +74,12 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
         monthAndYear.value = CalendarUtils.getMonthAndYear(currentMonth)
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.topPadding(12.dp)) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth(),
             color = Color.White,
             shadowElevation = 12.dp,
-            tonalElevation = 32.dp,
             shape = RoundedCornerShape(30.dp)
         ) {
             Column(

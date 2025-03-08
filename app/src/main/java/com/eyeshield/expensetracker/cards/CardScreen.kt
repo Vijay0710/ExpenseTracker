@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,10 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -209,84 +205,64 @@ fun TextWithIcon(
 }
 
 @Composable
-fun ColumnScope.CardInformationSection(
+fun CardInformationSection(
     cardInfo: CardsInfoUIModel
 ) {
-    Surface(
+    Column(
         modifier = Modifier
-            .weight(1f)
-            .shadow(
-                elevation = 12.dp,
-                clip = false,
-                shape = RoundedCornerShape(
-                    topStart = 70.dp,
-                    topEnd = 70.dp,
-                    bottomEnd = 0.dp,
-                    bottomStart = 1.dp
-                ),
-                spotColor = colorResource(R.color.login_surface_ambient_shadow_color).copy(
-                    0.1f
-                )
-            ),
-        shape = RoundedCornerShape(topStart = 70.dp, topEnd = 70.dp),
-        color = colorResource(R.color.login_screen_background)
+            .fillMaxSize()
+            .padding(24.dp)
     ) {
+        Text(
+            text = "Card Information",
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontFamily = FontFamily(Font(R.font.nunito_bold)),
+                color = colorResource(R.color.card_information_title),
+                textAlign = TextAlign.Center
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxSize()
-                .padding(24.dp)
+                .fillMaxWidth()
+                .topPadding(30.dp)
         ) {
-            Text(
-                text = "Card Information",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.nunito_bold)),
-                    color = colorResource(R.color.white),
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.fillMaxWidth()
+
+            CardInformationSectionItem(
+                title = "Total Limit",
+                value = cardInfo.totalLimit
             )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .topPadding(30.dp)
-            ) {
-
-                CardInformationSectionItem(
-                    title = "Total Limit",
-                    value = cardInfo.totalLimit
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
 
-                CardInformationSectionItem(
-                    title = "Billing Cycle",
-                    value = cardInfo.billingCycle
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+            CardInformationSectionItem(
+                title = "Billing Cycle",
+                value = cardInfo.billingCycle
+            )
+            Spacer(modifier = Modifier.height(20.dp))
 
-                CardInformationSectionItem(
-                    title = "Due Date",
-                    value = cardInfo.dueDate
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+            CardInformationSectionItem(
+                title = "Due Date",
+                value = cardInfo.dueDate
+            )
+            Spacer(modifier = Modifier.height(20.dp))
 
-                CardInformationSectionItem(
-                    title = "Last Due",
-                    value = cardInfo.lastDueDate
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+            CardInformationSectionItem(
+                title = "Last Due",
+                value = cardInfo.lastDueDate
+            )
+            Spacer(modifier = Modifier.height(20.dp))
 
-                CardInformationSectionItem(
-                    title = "Total Reward Points",
-                    value = cardInfo.totalRewardsPoints
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-            }
+            CardInformationSectionItem(
+                title = "Total Reward Points",
+                value = cardInfo.totalRewardsPoints
+            )
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
+
 }
 
 @Composable
@@ -304,7 +280,7 @@ fun CardInformationSectionItem(
             title,
             style = TextStyle(
                 fontSize = 16.sp,
-                color = colorResource(R.color.white),
+                color = colorResource(R.color.card_information_header),
                 fontFamily = FontFamily(Font(R.font.nunito_regular)),
             )
         )
@@ -313,7 +289,7 @@ fun CardInformationSectionItem(
             text = value,
             style = TextStyle(
                 fontSize = 16.sp,
-                color = colorResource(R.color.white),
+                color = colorResource(R.color.card_information_body),
                 fontFamily = FontFamily(Font(R.font.nunito_regular))
             )
         )
@@ -357,7 +333,7 @@ private fun PreviewCardsScreen() {
             ),
             selectedCardInfo = CardsInfoUIModel(
                 totalLimit = "₹ 2,00,000",
-                billingCycle = "19/11/2024 - 20/12/2024",
+                billingCycle = "19th - 20th",
                 dueDate = "07/01/2025",
                 lastDueDate = "07/12/2024",
                 totalRewardsPoints = "10,000"

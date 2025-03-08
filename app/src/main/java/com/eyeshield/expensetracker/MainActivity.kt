@@ -18,16 +18,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -51,9 +46,6 @@ import com.eyeshield.expensetracker.networking.connectivity.ConnectivityObserver
 import com.eyeshield.expensetracker.utils.setStatusBarIconsColorToDark
 import com.eyeshield.expensetracker.welcome.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import javax.inject.Inject
 
@@ -89,34 +81,6 @@ class MainActivity : ComponentActivity() {
                 label = "Surface Background Transition Animation",
                 animationSpec = tween(500, easing = FastOutSlowInEasing)
             )
-
-            var isOffline by remember { mutableStateOf(false) }
-            var shouldShowNetworkStatusIndicator by remember { mutableStateOf(false) }
-
-            val coroutineScope = rememberCoroutineScope()
-            val owner = LocalLifecycleOwner.current
-
-            LaunchedEffect(owner) {
-                lifecycleScope.launch {
-                    owner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                        connectivityObserver.observe().collectLatest { status ->
-                            val isConnected = (status == ConnectivityObserver.Status.AVAILABLE)
-                            coroutineScope.launch {
-                                // If network is lost midway and it becomes available we will show Online Indicator for 3 seconds
-                                if (isOffline && isConnected) {
-                                    coroutineScope.launch {
-                                        shouldShowNetworkStatusIndicator = true
-                                        delay(3000)
-                                        shouldShowNetworkStatusIndicator = false
-                                    }
-                                } else if (!isConnected) shouldShowNetworkStatusIndicator = true
-                                // If no network available on App Start Up we will show the indicator
-                                isOffline = (status != ConnectivityObserver.Status.AVAILABLE)
-                            }
-                        }
-                    }
-                }
-            }
 
             ObserveAsEvents(viewModel.uiEvent) { event ->
                 startDestination = when (event) {
@@ -178,8 +142,6 @@ class MainActivity : ComponentActivity() {
                             BottomNavigation(
                                 mainNavController = navController,
                                 bottomNavController = bottomNavController,
-                                isOffline = isOffline,
-                                shouldShowNetworkStatusIndicator = shouldShowNetworkStatusIndicator,
                                 containerColor = surfaceBackGroundColorAnimation,
                             )
                         }

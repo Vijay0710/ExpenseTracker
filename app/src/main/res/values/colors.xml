@@ -84,5 +84,8 @@
     <color name="card_screen_background">#F5F2ED</color>
     <color name="check_out_transactions">@color/lapis_lazuli</color>
     <color name="analyse_spends">@color/lapis_lazuli</color>
+    <color name="card_information_title">@color/login_screen_background</color>
+    <color name="card_information_header">@color/login_screen_background</color>
+    <color name="card_information_body">@color/login_screen_background</color>
 
 </resources>

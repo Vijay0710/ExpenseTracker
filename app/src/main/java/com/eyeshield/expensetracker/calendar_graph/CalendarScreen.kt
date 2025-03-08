@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -46,6 +45,7 @@ import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
 import com.eyeshield.expensetracker.data.local.database.DatabaseStatus
 import com.eyeshield.expensetracker.data.local.entity.TransactionData
+import com.eyeshield.expensetracker.extensions.horizontalPadding
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetailsShimmer
 
@@ -71,7 +71,7 @@ fun CalendarScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(15.dp),
+            .horizontalPadding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
 
@@ -107,7 +107,7 @@ fun CalendarScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(15.dp), contentAlignment = Alignment.BottomEnd
+            .horizontalPadding(15.dp), contentAlignment = Alignment.BottomEnd
     ) {
         Button(
             modifier = Modifier

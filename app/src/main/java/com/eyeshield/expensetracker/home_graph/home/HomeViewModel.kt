@@ -40,17 +40,12 @@ class HomeViewModel @Inject constructor(
             val creditAccounts = withContext(Dispatchers.IO) {
                 creditAccountDao.getCreditAccounts()
             }
-            if (creditAccounts.isEmpty()) {
-                doCreditAccountsInfoCall()
-            } else {
-                // Sorts the elements with selected element at top
-                updateCreditAccounts(
-                    creditAccounts.sortedBy {
-                        it.isSelected
-                    }.toUIModelListFromEntity()
-                )
-                shouldShowLoader(false)
-            }
+            // Sorts the elements with selected element at top
+            updateCreditAccounts(
+                creditAccounts.sortedBy {
+                    it.isSelected
+                }.toUIModelListFromEntity()
+            )
         }
     }
 
@@ -58,15 +53,6 @@ class HomeViewModel @Inject constructor(
         when (action) {
             UiAction.OnTrackIndicatorFinished -> {
                 updateToastVisibilityState(false)
-            }
-
-            UiAction.OnPullToRefreshClicked -> {
-                updatePullToRefreshStatus(true)
-                viewModelScope.launch {
-                    doCreditAccountsInfoCall(
-                        isPullToRefresh = true
-                    )
-                }
             }
 
             is UiAction.TransformCreditCards -> {
@@ -119,18 +105,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun doCreditAccountsInfoCall(
-        isPullToRefresh: Boolean = false
-    ) {
-        shouldShowLoader(true)
-
-        shouldShowLoader(false)
-
-        if (isPullToRefresh) {
-            updatePullToRefreshStatus(status = false)
-        }
-    }
-
     private fun updatePullToRefreshStatus(status: Boolean) {
         _uiState.update {
             it.copy(
@@ -156,10 +130,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun insertCreditAccounts(creditAccounts: List<CreditAccount>) {
+    suspend fun insertCreditAccounts(vararg creditAccount: CreditAccount) {
         withContext(Dispatchers.IO) {
             creditAccountDao.insertCreditAccount(
-                creditAccount = creditAccounts.toTypedArray()
+                creditAccount = creditAccount
             )
         }
     }
@@ -199,7 +173,6 @@ class HomeViewModel @Inject constructor(
 
     sealed interface UiAction {
         data object OnTrackIndicatorFinished : UiAction
-        data object OnPullToRefreshClicked : UiAction
 
         /** Action To Update Cards Position when user chooses a particular card **/
         data class TransformCreditCards(

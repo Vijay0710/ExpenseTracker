@@ -1,7 +1,6 @@
 package com.eyeshield.expensetracker.home_graph.home
 
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -19,15 +18,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +50,8 @@ import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.common.AnimatedToast
 import com.eyeshield.expensetracker.extensions.bottomPadding
+import com.eyeshield.expensetracker.extensions.horizontalPadding
+import com.eyeshield.expensetracker.extensions.topPadding
 import com.eyeshield.expensetracker.home_graph.home.components.CardFace
 import com.eyeshield.expensetracker.home_graph.home.components.CardShimmer
 import com.eyeshield.expensetracker.home_graph.home.components.CreditCard
@@ -64,7 +60,6 @@ import com.eyeshield.expensetracker.home_graph.home.components.Transactions
 import com.eyeshield.expensetracker.home_graph.home.data.CardInfo
 import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountUIModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onNavigate: (MainNavRoutes) -> Unit,
@@ -73,206 +68,184 @@ fun HomeScreen(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
-    val showLogOutDialog = remember { mutableStateOf(false) }
-    val pullToRefreshState = rememberPullToRefreshState()
 
     // To show 3D effect in Y Axis when user scrolls to the end of cards
     var rotationYAxis by remember {
         mutableFloatStateOf(0f)
     }
 
-    BackHandler {
-        showLogOutDialog.value = !showLogOutDialog.value
-    }
 
-    PullToRefreshBox(
-        modifier = Modifier.padding(24.dp),
-        isRefreshing = uiState.isPullToRefreshInProgress,
-        onRefresh = {
-            uiAction(HomeViewModel.UiAction.OnPullToRefreshClicked)
-        },
-        state = pullToRefreshState,
-        indicator = {
-            Indicator(
-                state = pullToRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter),
-                isRefreshing = uiState.isPullToRefreshInProgress,
-                containerColor = colorResource(R.color.shadow_white),
-                color = colorResource(R.color.login_screen_background)
-            )
-        }
+    LazyColumn(
+        modifier = Modifier
+            .horizontalPadding(24.dp)
+            .fillMaxSize(),
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-        ) {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .bottomPadding(40.dp)
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .bottomPadding(40.dp)
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                    ) {
-                        Text(
-                            text = "Good Morning!",
-                            style = TextStyle(
-                                fontSize = 15.sp, color = colorResource(id = R.color.greeting),
-                                fontFamily = FontFamily(Font(R.font.nunito_regular))
-                            )
+                    Text(
+                        text = "Good Morning!",
+                        style = TextStyle(
+                            fontSize = 15.sp, color = colorResource(id = R.color.greeting),
+                            fontFamily = FontFamily(Font(R.font.nunito_regular))
                         )
+                    )
 
-                        Text(
-                            modifier = Modifier.padding(top = 10.dp),
-                            text = "Vijay A", style = TextStyle(
-                                fontSize = 20.sp, color = colorResource(id = R.color.username),
-                                fontFamily = FontFamily(Font(R.font.nunito_bold))
-                            )
+                    Text(
+                        modifier = Modifier.topPadding(10.dp),
+                        text = "Vijay A", style = TextStyle(
+                            fontSize = 20.sp, color = colorResource(id = R.color.username),
+                            fontFamily = FontFamily(Font(R.font.nunito_bold))
                         )
-                    }
-
-                    Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .align(Alignment.CenterVertically)
-                            .drawBehind {
-                                drawCircle(Color.White, radius = 48f)
-                            }
-                            .clickable(
-                                interactionSource = interactionSource,
-                                indication = ripple(
-                                    bounded = false,
-                                    radius = 17.dp,
-                                    color = Color.Transparent
-                                ),
-                                onClick = {}
-                            ),
-                        painter = painterResource(id = R.drawable.notification),
-                        contentDescription = "Notification",
-                        tint = if (isPressed.value)
-                            colorResource(id = R.color.notification_pressed_state)
-                        else
-                            Color.Unspecified
                     )
                 }
+
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+                        .drawBehind {
+                            drawCircle(Color.White, radius = 48f)
+                        }
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = ripple(
+                                bounded = false,
+                                radius = 17.dp,
+                                color = Color.Transparent
+                            ),
+                            onClick = {}
+                        ),
+                    painter = painterResource(id = R.drawable.notification),
+                    contentDescription = "Notification",
+                    tint = if (isPressed.value)
+                        colorResource(id = R.color.notification_pressed_state)
+                    else
+                        Color.Unspecified
+                )
             }
+        }
 
-            item {
-                if (uiState.isLoading) {
-                    CardShimmer(
-                        modifier = Modifier.bottomPadding(40.dp)
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .bottomPadding(40.dp)
-                            .graphicsLayer {
-                                rotationY = rotationYAxis
-                                cameraDistance = 20f
-                            }
-                            .pointerInput(Unit) {
-                                detectDragGestures(
-                                    onDrag = { _, dragAmount ->
-                                        rotationYAxis =
-                                            (rotationYAxis + dragAmount.x / 5).coerceIn(-20f, 20f)
-                                    },
-                                    onDragEnd = {
-                                        rotationYAxis = 0f
-                                    },
-                                    onDragCancel = {
-                                        rotationYAxis = 0f
-                                    },
+        item {
+            if (uiState.isLoading) {
+                CardShimmer(
+                    modifier = Modifier.bottomPadding(40.dp)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .bottomPadding(40.dp)
+                        .graphicsLayer {
+                            rotationY = rotationYAxis
+                            cameraDistance = 20f
+                        }
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDrag = { _, dragAmount ->
+                                    rotationYAxis =
+                                        (rotationYAxis + dragAmount.x / 5).coerceIn(-20f, 20f)
+                                },
+                                onDragEnd = {
+                                    rotationYAxis = 0f
+                                },
+                                onDragCancel = {
+                                    rotationYAxis = 0f
+                                },
+                            )
+                        }
+                ) {
+                    uiState.creditAccounts.zip(uiState.cardInfoList)
+                        .mapIndexed { index, cardPositionAndOffsetState ->
+                            key(index) {
+                                var cardFace by remember { mutableStateOf(CardFace.Front) }
+
+                                val zOffsetDelay = remember(index) { 100 * index }
+                                val yOffsetDelay =
+                                    remember(index) { 2 * zOffsetDelay + (100 * uiState.creditAccounts.size - 1) }
+
+                                val animateYOffset = animateDpAsState(
+                                    targetValue = cardPositionAndOffsetState.second.offsetY,
+                                    label = "Y Offset Animation",
+                                    animationSpec = tween(
+                                        durationMillis = 500,
+                                        easing = EaseIn,
+                                        delayMillis = yOffsetDelay
+                                    )
                                 )
-                            }
-                    ) {
-                        uiState.creditAccounts.zip(uiState.cardInfoList)
-                            .mapIndexed { index, cardPositionAndOffsetState ->
-                                key(index) {
-                                    var cardFace by remember { mutableStateOf(CardFace.Front) }
 
-                                    val zOffsetDelay = remember(index) { 100 * index }
-                                    val yOffsetDelay =
-                                        remember(index) { 2 * zOffsetDelay + (100 * uiState.creditAccounts.size - 1) }
-
-                                    val animateYOffset = animateDpAsState(
-                                        targetValue = cardPositionAndOffsetState.second.offsetY,
-                                        label = "Y Offset Animation",
-                                        animationSpec = tween(
-                                            durationMillis = 500,
-                                            easing = EaseIn,
-                                            delayMillis = yOffsetDelay
-                                        )
+                                val animateZIndex = animateFloatAsState(
+                                    targetValue = cardPositionAndOffsetState.second.zIndex,
+                                    label = "Z index animation",
+                                    animationSpec = tween(
+                                        durationMillis = 500,
+                                        easing = EaseIn,
+                                        delayMillis = zOffsetDelay
                                     )
+                                )
 
-                                    val animateZIndex = animateFloatAsState(
-                                        targetValue = cardPositionAndOffsetState.second.zIndex,
-                                        label = "Z index animation",
-                                        animationSpec = tween(
-                                            durationMillis = 500,
-                                            easing = EaseIn,
-                                            delayMillis = zOffsetDelay
-                                        )
-                                    )
-
-                                    CreditCard(
-                                        modifier = Modifier
-                                            .zIndex(animateZIndex.value)
-                                            .offset {
-                                                IntOffset(
-                                                    x = 0,
-                                                    y = animateYOffset.value.roundToPx()
-                                                )
-                                            },
-                                        cardContainerColor = colorResource(
-                                            cardPositionAndOffsetState.second.cardColor
-                                        ),
-                                        cardFace = cardFace,
-                                        onClick = {
-                                            if (cardPositionAndOffsetState.second.position == uiState.cardInfoList.size - 1) {
-                                                cardFace = cardFace.next
-                                            } else {
-                                                uiAction(
-                                                    HomeViewModel.UiAction.TransformCreditCards(
-                                                        id = cardPositionAndOffsetState.first.id,
-                                                        index = index,
-                                                        selectedCard = cardPositionAndOffsetState.second
-                                                    )
-                                                )
-                                            }
-                                        },
-                                        front = {
-                                            CreditCardContent(
-                                                onNavigate = onNavigate,
-                                                accountInfo = cardPositionAndOffsetState.first
+                                CreditCard(
+                                    modifier = Modifier
+                                        .zIndex(animateZIndex.value)
+                                        .offset {
+                                            IntOffset(
+                                                x = 0,
+                                                y = animateYOffset.value.roundToPx()
                                             )
                                         },
-                                        back = {
-
+                                    cardContainerColor = colorResource(
+                                        cardPositionAndOffsetState.second.cardColor
+                                    ),
+                                    cardFace = cardFace,
+                                    onClick = {
+                                        if (cardPositionAndOffsetState.second.position == uiState.cardInfoList.size - 1) {
+                                            cardFace = cardFace.next
+                                        } else {
+                                            uiAction(
+                                                HomeViewModel.UiAction.TransformCreditCards(
+                                                    id = cardPositionAndOffsetState.first.id,
+                                                    index = index,
+                                                    selectedCard = cardPositionAndOffsetState.second
+                                                )
+                                            )
                                         }
-                                    )
-                                }
+                                    },
+                                    front = {
+                                        CreditCardContent(
+                                            onNavigate = onNavigate,
+                                            accountInfo = cardPositionAndOffsetState.first
+                                        )
+                                    },
+                                    back = {
+
+                                    }
+                                )
                             }
-                    }
+                        }
                 }
-            }
-
-            item {
-                if (uiState.creditAccounts.size > 1) {
-                    Spacer(
-                        modifier = Modifier
-                            .bottomPadding(30.dp)
-                            .height(5.dp * uiState.creditAccounts.size)
-                    )
-                }
-            }
-
-            item {
-                Transactions()
             }
         }
+
+        item {
+            if (uiState.creditAccounts.size > 1) {
+                Spacer(
+                    modifier = Modifier
+                        .bottomPadding(30.dp)
+                        .height(5.dp * uiState.creditAccounts.size)
+                )
+            }
+        }
+
+        item {
+            Transactions()
+        }
     }
+
 
     AnimatedToast(
         shouldShowToast = uiState.shouldShowToast,
