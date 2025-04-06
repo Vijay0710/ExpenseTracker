@@ -88,4 +88,8 @@
     <color name="card_information_header">@color/login_screen_background</color>
     <color name="card_information_body">@color/login_screen_background</color>
 
+    <!-- Screen Backgrounds -->
+    <color name="home_screen_background">@color/shadow_white</color>
+    <color name="cards_screen_background">@color/card_screen_background</color>
+
 </resources>

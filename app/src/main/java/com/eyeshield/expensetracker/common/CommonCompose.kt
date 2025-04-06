@@ -45,3 +45,8 @@ fun OpaqueLoaderScreen(
         }
     }
 }
+
+
+fun Modifier.block(modifier: (Modifier) -> Modifier): Modifier {
+    return this.then(modifier(Modifier))
+}

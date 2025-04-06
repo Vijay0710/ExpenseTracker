@@ -5,7 +5,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -69,20 +68,22 @@ fun BottomNavigation(
         animationSpec = tween(500, easing = FastOutSlowInEasing)
     )
 
-
     LaunchedEffect(containerColor) {
         currentScreenColor = containerColor
     }
 
-
-    val onBottomNavTabsChangedListener: (Tabs) -> Unit = {
-        currentScreenColor = when (it) {
+    LaunchedEffect(bottomNavController.bottomTabCurrentDestination) {
+        currentScreenColor = when (bottomNavController.bottomTabCurrentDestination) {
             Tabs.CardScreen -> {
-                Color(ContextCompat.getColor(context, R.color.card_screen_background))
+                Color(
+                    ContextCompat.getColor(context, R.color.cards_screen_background)
+                )
             }
 
             else -> {
-                Color(ContextCompat.getColor(context, R.color.shadow_white))
+                Color(
+                    ContextCompat.getColor(context, R.color.home_screen_background)
+                )
             }
         }
     }
@@ -105,7 +106,6 @@ fun BottomNavigation(
                                 bottomNavController.navigate(
                                     route = item
                                 )
-                                onBottomNavTabsChangedListener(item)
                             }
                         },
                         icon = {
@@ -127,8 +127,7 @@ fun BottomNavigation(
     ) { innerPadding ->
         NavHost(
             modifier = Modifier
-                .padding(innerPadding)
-                .safeDrawingPadding(),
+                .padding(innerPadding),
             navController = bottomNavController,
             startDestination = Tabs.HomeScreen,
         ) {

@@ -49,7 +49,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.data.local.entity.TransactionData
+import com.eyeshield.expensetracker.extensions.bottomPadding
+import com.eyeshield.expensetracker.extensions.horizontalPadding
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
+import com.eyeshield.expensetracker.utils.handleEdgeToEdgeInsets
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)
@@ -63,12 +66,17 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.login_screen_background))
+            .handleEdgeToEdgeInsets(
+                isScaffold = false,
+                shouldHandleStatusBarInsets = true,
+            )
             .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(30.dp)
+                .horizontalPadding(30.dp)
+                .bottomPadding(30.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -241,13 +249,19 @@ fun AddExpenseScreen(navController: NavController = rememberNavController()) {
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             shape = RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp),
             color = Color.White
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .handleEdgeToEdgeInsets(
+                        isScaffold = false,
+                        shouldHandleStatusBarInsets = false,
+                        shouldHandleBottomBarInsets = true
+                    )
                     .padding(30.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
