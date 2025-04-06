@@ -4,7 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -36,9 +35,14 @@ import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
 import com.eyeshield.expensetracker.cards.CardsViewModel
 import com.eyeshield.expensetracker.data.local.database.orLoading
+import com.eyeshield.expensetracker.extensions.bottomPadding
+import com.eyeshield.expensetracker.extensions.endPadding
+import com.eyeshield.expensetracker.extensions.startPadding
 import com.eyeshield.expensetracker.home_graph.home.HomeScreen
 import com.eyeshield.expensetracker.home_graph.home.HomeViewModel
 import com.eyeshield.expensetracker.settings.SettingsScreen
+import com.eyeshield.expensetracker.utils.leftPadding
+import com.eyeshield.expensetracker.utils.rightPadding
 
 @Composable
 fun BottomNavigation(
@@ -93,7 +97,8 @@ fun BottomNavigation(
         bottomBar = {
             NavigationBar(
                 containerColor = currentScreenColorAnimation,
-                contentColor = Color.Transparent
+
+                contentColor = Color.Transparent,
             ) {
                 bottomNavItems.forEachIndexed { _, item ->
                     NavigationBarItem(
@@ -127,7 +132,9 @@ fun BottomNavigation(
     ) { innerPadding ->
         NavHost(
             modifier = Modifier
-                .padding(innerPadding),
+                .startPadding(innerPadding.leftPadding())
+                .endPadding(innerPadding.rightPadding())
+                .bottomPadding(innerPadding.calculateBottomPadding()),
             navController = bottomNavController,
             startDestination = Tabs.HomeScreen,
         ) {

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,6 +60,7 @@ import com.eyeshield.expensetracker.home_graph.home.components.CreditCardContent
 import com.eyeshield.expensetracker.home_graph.home.components.Transactions
 import com.eyeshield.expensetracker.home_graph.home.data.CardInfo
 import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountUIModel
+import com.eyeshield.expensetracker.utils.handleEdgeToEdgeInsets
 
 @Composable
 fun HomeScreen(
@@ -78,7 +80,12 @@ fun HomeScreen(
     LazyColumn(
         modifier = Modifier
             .horizontalPadding(24.dp)
-            .fillMaxSize(),
+            .handleEdgeToEdgeInsets(
+                isScaffold = false,
+                shouldHandleStatusBarInsets = true
+            )
+            .fillMaxSize()
+            .imePadding(),
     ) {
         item {
             Row(
@@ -243,6 +250,16 @@ fun HomeScreen(
 
         item {
             Transactions()
+        }
+
+        item {
+            Spacer(
+                modifier = Modifier.handleEdgeToEdgeInsets(
+                    isScaffold = false,
+                    shouldHandleStatusBarInsets = false,
+                    shouldHandleBottomBarInsets = true
+                )
+            )
         }
     }
 

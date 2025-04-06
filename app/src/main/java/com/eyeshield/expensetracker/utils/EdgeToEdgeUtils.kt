@@ -18,10 +18,10 @@ import com.eyeshield.expensetracker.extensions.startPadding
 import com.eyeshield.expensetracker.extensions.topPadding
 
 @Composable
-private fun PaddingValues.rightPadding(): Dp = calculateRightPadding(LocalLayoutDirection.current)
+fun PaddingValues.rightPadding(): Dp = calculateRightPadding(LocalLayoutDirection.current)
 
 @Composable
-private fun PaddingValues.leftPadding(): Dp = calculateLeftPadding(LocalLayoutDirection.current)
+fun PaddingValues.leftPadding(): Dp = calculateLeftPadding(LocalLayoutDirection.current)
 
 @Composable
 fun Modifier.handleEdgeToEdgeInsets(
@@ -39,11 +39,15 @@ fun Modifier.handleEdgeToEdgeInsets(
 
     val leftNavigationPadding = navigationBarInsets.leftPadding()
     val rightNavigationPadding = navigationBarInsets.rightPadding()
+    val bottomNavigationPadding = navigationBarInsets.calculateBottomPadding()
 
     val statusBarPadding =
         if (shouldHandleStatusBarInsets) statusBarInsets.calculateTopPadding() else 0.dp
-    val bottomBarPadding =
-        if (shouldHandleBottomBarInsets) navigationBarInsets.calculateBottomPadding() else 0.dp
+    val bottomBarPadding = if (shouldHandleBottomBarInsets) {
+        bottomNavigationPadding + rightNavigationPadding + leftNavigationPadding
+    } else {
+        0.dp
+    }
 
     return block {
         if (isScaffold) {

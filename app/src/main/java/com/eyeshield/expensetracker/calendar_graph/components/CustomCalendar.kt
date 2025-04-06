@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
+import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.extensions.topPadding
 import com.eyeshield.expensetracker.utils.CalendarUtils
 import kotlinx.coroutines.launch
@@ -74,12 +76,14 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
         monthAndYear.value = CalendarUtils.getMonthAndYear(currentMonth)
     }
 
-    Column(modifier = modifier.topPadding(12.dp)) {
+    Column(
+        modifier = modifier.topPadding(12.dp)
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth(),
             color = Color.White,
-            shadowElevation = 12.dp,
+            shadowElevation = 10.dp,
             shape = RoundedCornerShape(30.dp)
         ) {
             Column(
@@ -142,10 +146,10 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                             imageVector = Icons.Default.ChevronRight,
                             contentDescription = "Left Icon",
                             tint =
-                            if (currentPage != pagerState.pageCount)
-                                colorResource(id = R.color.carbon_blue)
-                            else
-                                colorResource(id = R.color.carbon_blue).copy(0.5f)
+                                if (currentPage != pagerState.pageCount)
+                                    colorResource(id = R.color.carbon_blue)
+                                else
+                                    colorResource(id = R.color.carbon_blue).copy(0.5f)
                         )
                     }
                 }
@@ -212,7 +216,8 @@ fun CustomCalendar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, bottom = 12.dp)
+            .topPadding(16.dp)
+            .bottomPadding(12.dp)
     ) {
         weekAbbreviationList.forEach { week ->
             key(week) {
@@ -230,6 +235,7 @@ fun CustomCalendar(
 
     HorizontalPager(state = horizontalPagerState, userScrollEnabled = false) {
         LazyVerticalGrid(
+            modifier = Modifier.height(200.dp),
             state = state,
             columns = GridCells.Fixed(7),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -268,10 +274,10 @@ fun CustomCalendar(
                             fontFamily = FontFamily(Font(R.font.nunito_regular)),
                             fontSize = 14.sp,
                             color =
-                            if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
-                                Color.White
-                            else
-                                colorResource(id = R.color.carbon_blue),
+                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
+                                    Color.White
+                                else
+                                    colorResource(id = R.color.carbon_blue),
                             textAlign = TextAlign.Center
                         )
                     )

@@ -63,7 +63,7 @@ fun CreditCard(
     shouldShowCircles: Boolean = true,
     internalPaddingValues: PaddingValues = PaddingValues(0.dp),
     cardElevation: CardElevation = CardDefaults.cardElevation(
-        defaultElevation = 24.dp
+        defaultElevation = 12.dp
     )
 ) {
 

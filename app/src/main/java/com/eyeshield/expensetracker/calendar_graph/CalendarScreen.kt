@@ -7,14 +7,16 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,7 +50,9 @@ import com.eyeshield.expensetracker.data.local.entity.TransactionData
 import com.eyeshield.expensetracker.extensions.horizontalPadding
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetails
 import com.eyeshield.expensetracker.home_graph.home.components.TransactionDetailsShimmer
+import com.eyeshield.expensetracker.utils.handleEdgeToEdgeInsets
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,
@@ -68,45 +72,43 @@ fun CalendarScreen(
         }
     }
 
-    Column(
+    LazyColumn(
         modifier = modifier
-            .fillMaxSize()
+            .handleEdgeToEdgeInsets(
+                isScaffold = false,
+                shouldHandleStatusBarInsets = true
+            )
             .horizontalPadding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-
-        PaymentReminderCalendar(modifier = Modifier)
-
-        Text(
-            modifier = Modifier,
-            text = "Expenses", style = TextStyle(
-                fontSize = 20.sp, color = colorResource(id = R.color.transaction_heading),
-                fontFamily = FontFamily(Font(R.font.nunito_bold))
+        item {
+            PaymentReminderCalendar(
+                modifier = Modifier
             )
-        )
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-
-            if (databaseStatus == DatabaseStatus.LOADING) {
-                item {
-                    TransactionDetailsShimmer()
-                }
-            } else {
-                items(items.size.coerceAtMost(1), key = { it }) {
-                    TransactionDetails(
-                        transactionData = items[it], modifier = Modifier
-                    )
-                }
-            }
         }
+
+        item {
+            Text(
+                modifier = Modifier,
+                text = "Expenses", style = TextStyle(
+                    fontSize = 20.sp, color = colorResource(id = R.color.transaction_heading),
+                    fontFamily = FontFamily(Font(R.font.nunito_bold))
+                )
+            )
+        }
+
+        expensesList(
+            databaseStatus = databaseStatus,
+            items = items
+        )
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .handleEdgeToEdgeInsets(
+                isScaffold = false,
+            )
             .horizontalPadding(15.dp), contentAlignment = Alignment.BottomEnd
     ) {
         Button(
@@ -130,8 +132,35 @@ fun CalendarScreen(
             )
         }
     }
+}
 
+fun LazyListScope.expensesList(databaseStatus: DatabaseStatus, items: List<TransactionData>) {
+    if (databaseStatus == DatabaseStatus.LOADING) {
+        item {
+            TransactionDetailsShimmer()
+        }
+    } else {
+        items(items.size.coerceAtMost(1), key = { it }) {
+            TransactionDetails(
+                transactionData = items[it], modifier = Modifier
+            )
+        }
+    }
 
+    item {
+        // Need double the bottom bar spacing as the Record a expense button is floating in this screen
+        Spacer(
+            modifier = Modifier
+                .handleEdgeToEdgeInsets(
+                    isScaffold = false,
+                    shouldHandleBottomBarInsets = true
+                )
+                .handleEdgeToEdgeInsets(
+                    isScaffold = false,
+                    shouldHandleBottomBarInsets = true
+                )
+        )
+    }
 }
 
 fun Modifier.shimmerLoadingAnimation(
