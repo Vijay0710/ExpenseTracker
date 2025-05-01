@@ -1,9 +1,6 @@
 package com.eyeshield.expensetracker.bottomNav
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -13,16 +10,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -34,6 +28,7 @@ import com.eyeshield.expensetracker.calendar_graph.CalendarScreen
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.cards.CardScreen
 import com.eyeshield.expensetracker.cards.CardsViewModel
+import com.eyeshield.expensetracker.components.rememberCustomNavController
 import com.eyeshield.expensetracker.data.local.database.orLoading
 import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.extensions.endPadding
@@ -46,11 +41,9 @@ import com.eyeshield.expensetracker.utils.rightPadding
 
 @Composable
 fun BottomNavigation(
-    mainNavController: ApplicationNavController,
-    bottomNavController: BottomTabNavController,
-    containerColor: Color
+    mainNavController: ApplicationNavController
 ) {
-    val context = LocalContext.current
+    val bottomNavController = rememberCustomNavController<BottomTabNavController>()
 
     val bottomNavItems = remember {
         listOf(
@@ -62,43 +55,13 @@ fun BottomNavigation(
         )
     }
 
-    var currentScreenColor by remember {
-        mutableStateOf(containerColor)
-    }
-
-    val currentScreenColorAnimation by animateColorAsState(
-        targetValue = currentScreenColor,
-        label = "Surface Background Transition Animation",
-        animationSpec = tween(500, easing = FastOutSlowInEasing)
-    )
-
-    LaunchedEffect(containerColor) {
-        currentScreenColor = containerColor
-    }
-
-    LaunchedEffect(bottomNavController.bottomTabCurrentDestination) {
-        currentScreenColor = when (bottomNavController.bottomTabCurrentDestination) {
-            Tabs.CardScreen -> {
-                Color(
-                    ContextCompat.getColor(context, R.color.cards_screen_background)
-                )
-            }
-
-            else -> {
-                Color(
-                    ContextCompat.getColor(context, R.color.home_screen_background)
-                )
-            }
-        }
-    }
 
 
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = currentScreenColorAnimation,
-
                 contentColor = Color.Transparent,
+                containerColor = colorResource(R.color.shadow_white)
             ) {
                 bottomNavItems.forEachIndexed { _, item ->
                     NavigationBarItem(
@@ -108,9 +71,7 @@ fun BottomNavigation(
                         },
                         onClick = {
                             if (bottomNavController.bottomTabCurrentDestination != item) {
-                                bottomNavController.navigate(
-                                    route = item
-                                )
+                                bottomNavController.navigate(item)
                             }
                         },
                         icon = {
@@ -128,7 +89,7 @@ fun BottomNavigation(
                 }
             }
         },
-        containerColor = currentScreenColorAnimation
+        containerColor = colorResource(R.color.shadow_white)
     ) { innerPadding ->
         NavHost(
             modifier = Modifier

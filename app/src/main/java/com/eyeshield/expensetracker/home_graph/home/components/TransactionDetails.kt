@@ -55,7 +55,7 @@ fun TransactionDetails(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(50.dp),
                     painter = painterResource(id = transactionData.expenseResourceID),
                     contentDescription = null,
                     tint = Color.Unspecified

@@ -81,7 +81,7 @@
     <color name="pricing_type">#67696D</color>
 
     <!-- Cards Screen -->
-    <color name="card_screen_background">#F5F2ED</color>
+    <color name="card_screen_background">@color/shadow_white</color>
     <color name="check_out_transactions">@color/lapis_lazuli</color>
     <color name="analyse_spends">@color/lapis_lazuli</color>
     <color name="card_information_title">@color/login_screen_background</color>

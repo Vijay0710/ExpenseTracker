@@ -36,9 +36,7 @@ fun slideOutFromRightToLeft(): (AnimatedContentTransitionScope<NavBackStackEntry
             )
         ) { fullWidth ->
             fullWidth
-        } + fadeOut(
-            animationSpec = tween(durationMillis = 500)
-        )
+        }
     }
 }
 

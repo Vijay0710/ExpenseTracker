@@ -112,10 +112,10 @@ fun Transactions() {
 
             TransactionDetails(
                 transactionData = TransactionData(
-                    expenseResourceID = R.drawable.spotify_icon,
-                    expenseName = "Spotify Premium",
+                    expenseResourceID = R.drawable.netflix_logo,
+                    expenseName = "Netflix Basic Plan",
                     expenseDate = "Sep 21, 2024",
-                    expenseAmount = "- ₹2500",
+                    expenseAmount = "- ₹199",
                     expenseId = "1"
                 ),
             )
