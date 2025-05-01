@@ -26,13 +26,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,38 +45,30 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
+import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
 import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.extensions.topPadding
-import com.eyeshield.expensetracker.utils.CalendarUtils
 import kotlinx.coroutines.launch
 
 @Composable
-@Preview
-fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
+fun PaymentReminderCalendar(
+    modifier: Modifier = Modifier,
+    calendarData: CalendarData,
+    uiAction: (TransactionViewModel.UiAction) -> Unit
+) {
     val pagerState = rememberPagerState(
-        initialPage = 1,
+        initialPage = calendarData.monthIndex,
         pageCount = { 12 }
     )
     val scope = rememberCoroutineScope()
-    val (currentMonth, setCurrentMonth) = remember {
-        mutableIntStateOf(CalendarUtils.getCurrentMonth())
-    }
-    var currentPage by remember {
-        mutableIntStateOf(pagerState.currentPage)
-    }
-    val monthAndYear = remember { mutableStateOf(CalendarUtils.getMonthAndYear(currentMonth)) }
-
-    LaunchedEffect(key1 = currentMonth) {
-        monthAndYear.value = CalendarUtils.getMonthAndYear(currentMonth)
-    }
+    var currentPage by rememberSaveable { mutableIntStateOf(pagerState.currentPage) }
 
     Column(
-        modifier = modifier.topPadding(12.dp)
+        modifier = modifier
     ) {
         Surface(
             modifier = Modifier
@@ -97,7 +88,7 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = monthAndYear.value, style = TextStyle(
+                        text = calendarData.monthAndYear, style = TextStyle(
                             fontSize = 16.sp,
                             fontFamily = FontFamily(Font(R.font.nunito_semi_bold)),
                             fontWeight = FontWeight.ExtraBold,
@@ -112,14 +103,16 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                                     animationSpec = tween(600, easing = LinearOutSlowInEasing),
                                 )
                             }
+                            uiAction(
+                                TransactionViewModel.UiAction.OnLeftChevronClicked(currentPage)
+                            )
                             currentPage -= 1
-                            setCurrentMonth(currentMonth - 1)
                         },
                         enabled = currentPage > 1
                     ) {
                         Icon(
                             imageVector = Icons.Default.ChevronLeft,
-                            contentDescription = "Left Icon",
+                            contentDescription = "Left Chevron",
                             tint = if (currentPage > 1)
                                 colorResource(id = R.color.carbon_blue)
                             else
@@ -137,14 +130,16 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                                     )
                                 }
                             }
-                            setCurrentMonth(currentMonth + 1)
+                            uiAction(
+                                TransactionViewModel.UiAction.OnRightChevronClicked(currentPage)
+                            )
                             currentPage += 1
                         },
                         enabled = currentPage != pagerState.pageCount
                     ) {
                         Icon(
                             imageVector = Icons.Default.ChevronRight,
-                            contentDescription = "Left Icon",
+                            contentDescription = "Right Chevron",
                             tint =
                                 if (currentPage != pagerState.pageCount)
                                     colorResource(id = R.color.carbon_blue)
@@ -154,7 +149,11 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
                     }
                 }
 
-                CustomCalendar(pagerState, currentMonth)
+                CustomCalendar(
+                    pagerState,
+                    calendarData,
+                    uiAction
+                )
             }
         }
     }
@@ -165,7 +164,8 @@ fun PaymentReminderCalendar(modifier: Modifier = Modifier) {
 @Composable
 fun CustomCalendar(
     pagerState: PagerState,
-    updatedMonthPosition: Int,
+    calendarData: CalendarData,
+    uiAction: (TransactionViewModel.UiAction) -> Unit
 ) {
 
     val weekAbbreviationList = remember {
@@ -177,28 +177,8 @@ fun CustomCalendar(
         pagerState
     }
 
-    var calendarData by remember {
-        mutableStateOf(
-            CalendarData(
-                currentMonthPosition = updatedMonthPosition,
-                dayStartingColumn = CalendarUtils.getStartDayOfTheMonthOffset(updatedMonthPosition),
-                currentDay = CalendarUtils.getCurrentDay(),
-                totalDays = CalendarUtils.getTotalDaysForCurrentMonth(updatedMonthPosition),
-                selectedDay = 0
-            )
-        )
-    }
 
     val selectedDayColor = colorResource(id = R.color.selected_day)
-
-    LaunchedEffect(key1 = updatedMonthPosition) {
-        calendarData = calendarData.copy(
-            dayStartingColumn = CalendarUtils.getStartDayOfTheMonthOffset(updatedMonthPosition),
-            currentDay = CalendarUtils.getCurrentDay(),
-            totalDays = CalendarUtils.getTotalDaysForCurrentMonth(updatedMonthPosition),
-            selectedDay = 0
-        )
-    }
 
     val todayBackgroundModifier = remember {
         Modifier.drawBehind {
@@ -255,12 +235,16 @@ fun CustomCalendar(
                                 indication = ripple(bounded = false, radius = 15.dp),
                                 onClick = remember {
                                     {
-                                        calendarData = calendarData.copy(selectedDay = item + 1)
+                                        uiAction(
+                                            TransactionViewModel.UiAction.UpdateSelectedDay(
+                                                item + 1
+                                            )
+                                        )
                                     }
                                 }
                             )
                             .then(
-                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
+                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1)
                                     todayBackgroundModifier
                                 else if (calendarData.selectedDay != calendarData.currentDay && calendarData.selectedDay == item + 1)
                                     selectedDayBackgroundModifier
@@ -274,7 +258,7 @@ fun CustomCalendar(
                             fontFamily = FontFamily(Font(R.font.nunito_regular)),
                             fontSize = 14.sp,
                             color =
-                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.currentMonthPosition == updatedMonthPosition)
+                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1)
                                     Color.White
                                 else
                                     colorResource(id = R.color.carbon_blue),

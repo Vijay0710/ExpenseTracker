@@ -114,6 +114,8 @@ fun BottomNavigation(
             composable<Tabs.CalendarScreen> {
                 val transactionViewModel = hiltViewModel<TransactionViewModel>()
 
+                val uiState by transactionViewModel.uiState.collectAsStateWithLifecycle()
+
                 BackHandler {
                     bottomNavController.popUpToHomeScreen()
                 }
@@ -124,6 +126,8 @@ fun BottomNavigation(
 
                 CalendarScreen(
                     getAllTransactions = transactionViewModel.databaseResult.value?._data,
+                    uiState = uiState,
+                    uiAction = transactionViewModel::onUiAction,
                     databaseStatus = transactionViewModel.databaseResult.value?.status.orLoading(),
                     onNavigate = { route ->
                         mainNavController.navigateToSingleTop(route)

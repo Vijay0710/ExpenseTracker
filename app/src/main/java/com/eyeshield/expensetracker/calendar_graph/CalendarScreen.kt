@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.application.MainNavRoutes
 import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
+import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
 import com.eyeshield.expensetracker.data.local.database.DatabaseStatus
 import com.eyeshield.expensetracker.data.local.entity.TransactionData
 import com.eyeshield.expensetracker.extensions.horizontalPadding
@@ -56,6 +57,8 @@ import com.eyeshield.expensetracker.utils.handleEdgeToEdgeInsets
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,
+    uiState: TransactionViewModel.UiState,
+    uiAction: (TransactionViewModel.UiAction) -> Unit,
     getAllTransactions: List<TransactionData>?,
     databaseStatus: DatabaseStatus,
     onNavigate: (MainNavRoutes) -> Unit
@@ -83,7 +86,9 @@ fun CalendarScreen(
     ) {
         item {
             PaymentReminderCalendar(
-                modifier = Modifier
+                modifier = Modifier,
+                calendarData = uiState.calendarData,
+                uiAction = uiAction
             )
         }
 
@@ -224,6 +229,19 @@ private fun PreviewCalendarScreen() {
         databaseStatus = DatabaseStatus.LOADING,
         onNavigate = {
             // Preview
+        },
+        uiState = TransactionViewModel.UiState(
+            calendarData = CalendarData(
+                monthIndex = 4,
+                monthAndYear = "May 2025",
+                dayStartingColumn = 4,
+                currentDay = 1,
+                totalDays = 31,
+                selectedDay = 0
+            )
+        ),
+        uiAction = {
+
         }
     )
 }
