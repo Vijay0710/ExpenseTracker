@@ -4,7 +4,6 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -52,6 +53,7 @@ import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
 import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.extensions.topPadding
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -60,6 +62,7 @@ fun PaymentReminderCalendar(
     calendarData: CalendarData,
     uiAction: (TransactionViewModel.UiAction) -> Unit
 ) {
+
     val pagerState = rememberPagerState(
         initialPage = calendarData.monthIndex,
         pageCount = { 12 }
@@ -67,8 +70,29 @@ fun PaymentReminderCalendar(
     val scope = rememberCoroutineScope()
     var currentPage by rememberSaveable { mutableIntStateOf(pagerState.currentPage) }
 
+    LaunchedEffect(pagerState) {
+        snapshotFlow {
+            pagerState.currentPage
+        }.distinctUntilChanged().collect { page ->
+
+            if (currentPage < page) {
+                uiAction(
+                    TransactionViewModel.UiAction.OnRightChevronClicked(currentPage)
+                )
+            }
+
+            if (currentPage > page) {
+                uiAction(
+                    TransactionViewModel.UiAction.OnLeftChevronClicked(currentPage)
+                )
+            }
+
+            currentPage = page
+        }
+    }
+
     Column(
-        modifier = modifier
+        modifier = modifier.topPadding(20.dp)
     ) {
         Surface(
             modifier = Modifier
@@ -163,7 +187,7 @@ fun PaymentReminderCalendar(
 
 @Composable
 fun CustomCalendar(
-    pagerState: PagerState,
+    horizontalPagerState: PagerState,
     calendarData: CalendarData,
     uiAction: (TransactionViewModel.UiAction) -> Unit
 ) {
@@ -173,30 +197,27 @@ fun CustomCalendar(
     }
 
     val state = rememberLazyGridState()
-    val horizontalPagerState = remember(pagerState) {
-        pagerState
-    }
 
 
     val selectedDayColor = colorResource(id = R.color.selected_day)
 
     val todayBackgroundModifier = remember {
         Modifier.drawBehind {
-            drawCircle(selectedDayColor, radius = 38f)
+            drawCircle(selectedDayColor, radius = 55f)
         }
     }
 
     val selectedDayBackgroundModifier = remember {
         Modifier.drawBehind {
-            drawCircle(selectedDayColor, radius = 38f, style = Stroke(width = 4f))
-            drawCircle(selectedDayColor.copy(0.1f), radius = 38f)
+            drawCircle(selectedDayColor, radius = 50f, style = Stroke(width = 4f))
+            drawCircle(selectedDayColor.copy(0.1f), radius = 50f)
         }
     }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .topPadding(16.dp)
+            .topPadding(12.dp)
             .bottomPadding(12.dp)
     ) {
         weekAbbreviationList.forEach { week ->
@@ -213,12 +234,12 @@ fun CustomCalendar(
         }
     }
 
-    HorizontalPager(state = horizontalPagerState, userScrollEnabled = false) {
+    HorizontalPager(state = horizontalPagerState, userScrollEnabled = true) {
         LazyVerticalGrid(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier
+                .height(220.dp),
             state = state,
             columns = GridCells.Fixed(7),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
             userScrollEnabled = true,
         ) {
             // Empty set of items to indicate the start day offset in the month
@@ -229,7 +250,7 @@ fun CustomCalendar(
                     val interactionSource = remember { MutableInteractionSource() }
                     Text(
                         modifier = Modifier
-                            .padding(7.dp)
+                            .padding(12.dp)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = ripple(bounded = false, radius = 15.dp),
@@ -244,7 +265,7 @@ fun CustomCalendar(
                                 }
                             )
                             .then(
-                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1)
+                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.isCurrentMonth)
                                     todayBackgroundModifier
                                 else if (calendarData.selectedDay != calendarData.currentDay && calendarData.selectedDay == item + 1)
                                     selectedDayBackgroundModifier
@@ -258,7 +279,7 @@ fun CustomCalendar(
                             fontFamily = FontFamily(Font(R.font.nunito_regular)),
                             fontSize = 14.sp,
                             color =
-                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1)
+                                if (!horizontalPagerState.isScrollInProgress && calendarData.currentDay == item + 1 && calendarData.isCurrentMonth)
                                     Color.White
                                 else
                                     colorResource(id = R.color.carbon_blue),

@@ -7,7 +7,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class CustomCalendarImpl @Inject constructor(
-    private val calendar: Calendar
+    val calendar: Calendar
 ) : CustomCalendar {
 
     override val monthName: String? =
@@ -53,5 +53,11 @@ class CustomCalendarImpl @Inject constructor(
             set(Calendar.MONTH, monthIndex)
         }
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    }
+
+    companion object {
+        fun isCurrentMonth(monthIndex: Int): Boolean {
+            return monthIndex == Calendar.getInstance().get(Calendar.MONTH)
+        }
     }
 }
