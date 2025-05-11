@@ -20,6 +20,7 @@ class CustomCalendarImpl @Inject constructor(
     override var monthIndex: Int = Month.valueOf(monthName!!.uppercase()).ordinal
 
     override fun getIndexOfWeekForStartDayOfCurrentMonth(): Int {
+        val calendar = calendar.clone() as Calendar
         calendar.apply {
             set(Calendar.YEAR, year)
             set(Calendar.MONTH, monthIndex)
@@ -32,6 +33,7 @@ class CustomCalendarImpl @Inject constructor(
     }
 
     override fun getMonthAndYear(monthFormat: String, yearFormat: String): String {
+        val calendar = calendar.clone() as Calendar
         val monthAndYearFormat = SimpleDateFormat("$monthFormat $yearFormat", Locale.getDefault())
         calendar.apply {
             set(Calendar.YEAR, year)
@@ -45,10 +47,12 @@ class CustomCalendarImpl @Inject constructor(
     }
 
     override fun getCurrentDay(): Int {
+        val calendar = calendar.clone() as Calendar
         return calendar.get(Calendar.DAY_OF_MONTH)
     }
 
     override fun getTotalDaysForMonth(): Int {
+        val calendar = calendar.clone() as Calendar
         calendar.apply {
             set(Calendar.MONTH, monthIndex)
         }

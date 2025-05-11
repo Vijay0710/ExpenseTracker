@@ -35,7 +35,6 @@ import com.eyeshield.expensetracker.extensions.noExitTransition
 import com.eyeshield.expensetracker.extensions.slideInFromRightToLeft
 import com.eyeshield.expensetracker.extensions.slideOutFromRightToLeft
 import com.eyeshield.expensetracker.home_graph.statistics.StatisticsScreen
-import com.eyeshield.expensetracker.utils.setStatusBarIconsColorToDark
 import com.eyeshield.expensetracker.welcome.WelcomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -51,7 +50,6 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
 
         enableEdgeToEdge()
-        setStatusBarIconsColorToDark(false)
 
         setContent {
 
