@@ -48,6 +48,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import com.eyeshield.expensetracker.R
 import com.eyeshield.expensetracker.calendar_graph.TransactionViewModel
 import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
@@ -67,28 +70,30 @@ fun PaymentReminderCalendar(
         initialPage = calendarData.monthIndex,
         pageCount = { 12 }
     )
+
     val scope = rememberCoroutineScope()
     var currentPage by rememberSaveable { mutableIntStateOf(pagerState.currentPage) }
+    val lifeCycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow {
-            pagerState.currentPage
-        }.distinctUntilChanged().collect { page ->
+    LaunchedEffect(Unit) {
+        snapshotFlow { pagerState.currentPage }
+            .flowWithLifecycle(lifeCycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .distinctUntilChanged()
+            .collect { page ->
+                if (currentPage < page) {
+                    uiAction(
+                        TransactionViewModel.UiAction.OnRightChevronClicked(currentPage)
+                    )
+                }
 
-            if (currentPage < page) {
-                uiAction(
-                    TransactionViewModel.UiAction.OnRightChevronClicked(currentPage)
-                )
+                if (currentPage > page) {
+                    uiAction(
+                        TransactionViewModel.UiAction.OnLeftChevronClicked(currentPage)
+                    )
+                }
+
+                currentPage = page
             }
-
-            if (currentPage > page) {
-                uiAction(
-                    TransactionViewModel.UiAction.OnLeftChevronClicked(currentPage)
-                )
-            }
-
-            currentPage = page
-        }
     }
 
     Column(
