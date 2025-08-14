@@ -37,15 +37,23 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val creditAccounts = withContext(Dispatchers.IO) {
-                creditAccountDao.getCreditAccounts()
+            withContext(Dispatchers.IO) {
+                val accounts = creditAccountDao.getCreditAccounts()
+                withContext(Dispatchers.Main.immediate) {
+                    if (accounts.isEmpty()) {
+                        updateCreditAccounts(
+                            uiState.value.creditAccounts
+                        )
+                    } else {
+                        // Sorts the elements with selected element at top
+                        updateCreditAccounts(
+                            accounts.sortedBy {
+                                it.isSelected
+                            }.toUIModelListFromEntity()
+                        )
+                    }
+                }
             }
-            // Sorts the elements with selected element at top
-            updateCreditAccounts(
-                creditAccounts.sortedBy {
-                    it.isSelected
-                }.toUIModelListFromEntity()
-            )
         }
     }
 
@@ -143,8 +151,33 @@ class HomeViewModel @Inject constructor(
      * If 1 cards we will be showing only one cards or else none if its 0
      * **/
     data class UiState(
-        val isLoading: Boolean = true,
-        val creditAccounts: List<CreditAccountUIModel> = listOf(),
+        val isLoading: Boolean = false,
+        val creditAccounts: List<CreditAccountUIModel> = listOf(
+            CreditAccountUIModel(
+                id = "1234",
+                accountNumber = "•••• •••• •••• 1234",
+                progress = 0.6f,
+                cardLimit = "₹ 2,00,000",
+                logo = R.drawable.visa_logo,
+                creditCardOutStanding = "15000.00"
+            ),
+            CreditAccountUIModel(
+                id = "1234",
+                accountNumber = "•••• •••• •••• 1234",
+                progress = 0.6f,
+                cardLimit = "₹ 2,00,000",
+                logo = R.drawable.visa_logo,
+                creditCardOutStanding = "15000.00"
+            ),
+            CreditAccountUIModel(
+                id = "1234",
+                accountNumber = "•••• •••• •••• 1234",
+                progress = 0.4f,
+                cardLimit = "₹ 2,00,000",
+                logo = R.drawable.mastercard_logo,
+                creditCardOutStanding = "15000.00"
+            )
+        ),
         val shouldShowToast: Boolean = false,
         val errorMessage: String = "",
         val isPullToRefreshInProgress: Boolean = false,

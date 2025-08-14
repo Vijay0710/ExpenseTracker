@@ -10,7 +10,13 @@ plugins {
 
 android {
     namespace = "com.eyeshield.expensetracker"
-    compileSdk = 35
+    compileSdk = 36
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+        }
+    }
 
     room {
         schemaDirectory("$projectDir/schemas")
@@ -19,7 +25,7 @@ android {
     defaultConfig {
         applicationId = "com.eyeshield.expensetracker"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -49,16 +55,16 @@ android {
             buildConfigField("String", "API_VALIDATION_KEY", "\"dmlqYXk6QHZpamF5KjcvMA==\"")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+
     buildFeatures {
         compose = true
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
