@@ -55,8 +55,6 @@ fun BottomNavigation(
         )
     }
 
-
-
     Scaffold(
         bottomBar = {
             NavigationBar(

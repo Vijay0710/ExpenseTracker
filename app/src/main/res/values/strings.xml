@@ -11,7 +11,7 @@
     <!-- Login Screen -->
     <string name="login_title">Login</string>
     <string name="email_text_field_title">Email</string>
-    <string name="email_text_field_hint">test@assimilate.cloud</string>
+    <string name="email_text_field_hint">test@example.com</string>
 
     <string name="password_text_field_hint">Password</string>
     <string name="password_text_field_title">Password</string>

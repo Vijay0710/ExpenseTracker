@@ -10,7 +10,7 @@ class ApplicationNavController(context: Context) : CustomNavHostController(conte
     /**
      * Ensures navigation of route specifically once even when user taps twice
      * **/
-    fun navigateToSingleTop(route: MainNavRoutes) {
+    fun navigateToSingleTop(route: Routes) {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastNavigationTime >= NAVIGATION_DELAY) {
             lastNavigationTime = currentTime
@@ -19,7 +19,7 @@ class ApplicationNavController(context: Context) : CustomNavHostController(conte
     }
 
 
-    fun navigateToSingleTopAndPopAllScreens(route: MainNavRoutes) {
+    fun navigateToSingleTopAndPopAllScreens(route: Routes) {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastNavigationTime >= NAVIGATION_DELAY) {
             lastNavigationTime = currentTime

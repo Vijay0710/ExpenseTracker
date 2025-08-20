@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.application.MainNavRoutes
+import com.eyeshield.expensetracker.application.Routes
 import com.eyeshield.expensetracker.calendar_graph.components.PaymentReminderCalendar
 import com.eyeshield.expensetracker.calendar_graph.data.CalendarData
 import com.eyeshield.expensetracker.data.local.database.DatabaseStatus
@@ -61,7 +61,7 @@ fun CalendarScreen(
     uiAction: (TransactionViewModel.UiAction) -> Unit,
     getAllTransactions: List<TransactionData>?,
     databaseStatus: DatabaseStatus,
-    onNavigate: (MainNavRoutes) -> Unit
+    onNavigate: (Routes) -> Unit
 ) {
     val items = remember(getAllTransactions) {
         mutableStateListOf<TransactionData>().apply {
@@ -125,7 +125,7 @@ fun CalendarScreen(
             ),
             shape = RoundedCornerShape(50),
             onClick = {
-                onNavigate(MainNavRoutes.AddExpenseScreen)
+                onNavigate(Routes.AddExpenseScreen)
             }
         ) {
             Text(

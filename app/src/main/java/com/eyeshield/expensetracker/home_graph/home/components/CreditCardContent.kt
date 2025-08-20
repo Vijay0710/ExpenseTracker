@@ -27,13 +27,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.application.MainNavRoutes
+import com.eyeshield.expensetracker.application.Routes
 import com.eyeshield.expensetracker.home_graph.home.data.CreditAccountUIModel
 
 @Composable
 fun CreditCardContent(
     accountInfo: CreditAccountUIModel,
-    onNavigate: (MainNavRoutes) -> Unit
+    onNavigate: (Routes) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -60,7 +60,7 @@ fun CreditCardContent(
                         interactionSource = interactionSource,
                         indication = null,
                         onClick = {
-                            onNavigate(MainNavRoutes.StatisticsScreen)
+                            onNavigate(Routes.StatisticsScreen)
                         }
                     ),
                 painter = painterResource(id = R.drawable.ic_more),

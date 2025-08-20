@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.eyeshield.expensetracker.R
-import com.eyeshield.expensetracker.application.MainNavRoutes
+import com.eyeshield.expensetracker.application.Routes
 import com.eyeshield.expensetracker.common.AnimatedToast
 import com.eyeshield.expensetracker.extensions.bottomPadding
 import com.eyeshield.expensetracker.extensions.horizontalPadding
@@ -64,7 +64,7 @@ import com.eyeshield.expensetracker.utils.handleEdgeToEdgeInsets
 
 @Composable
 fun HomeScreen(
-    onNavigate: (MainNavRoutes) -> Unit,
+    onNavigate: (Routes) -> Unit,
     uiState: HomeViewModel.UiState,
     uiAction: (HomeViewModel.UiAction) -> Unit
 ) {

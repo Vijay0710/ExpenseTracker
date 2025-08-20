@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eyeshield.expensetracker.EncryptedSessionStorage
+import com.eyeshield.expensetracker.EncryptedStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val sessionStorage: EncryptedSessionStorage
+    private val sessionStorage: EncryptedStorage
 ) : ViewModel() {
 
     var loginState by mutableStateOf(LoginState())

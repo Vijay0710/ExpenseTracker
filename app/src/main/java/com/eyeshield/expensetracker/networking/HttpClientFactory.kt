@@ -1,7 +1,7 @@
 package com.eyeshield.expensetracker.networking
 
 import com.eyeshield.expensetracker.BuildConfig
-import com.eyeshield.expensetracker.EncryptedSessionStorage
+import com.eyeshield.expensetracker.EncryptedStorage
 import com.eyeshield.expensetracker.api.ApiResult
 import com.eyeshield.expensetracker.auth.data.AccessTokenRequest
 import com.eyeshield.expensetracker.auth.data.AccessTokenResponse
@@ -29,7 +29,7 @@ import javax.inject.Singleton
 
 @Singleton
 class HttpClientFactory @Inject constructor(
-    private val encryptedSessionStorage: EncryptedSessionStorage
+    private val encryptedStorage: EncryptedStorage
 ) {
     fun build(): HttpClient {
         return HttpClient(CIO) {
@@ -73,7 +73,7 @@ class HttpClientFactory @Inject constructor(
                     }
 
                     loadTokens {
-                        val info = encryptedSessionStorage.get()
+                        val info = encryptedStorage.get("AUTH_INFO", AuthInfo.serializer())
                         BearerTokens(
                             accessToken = info?.accessToken.orEmpty(),
                             refreshToken = info?.refreshToken.orEmpty()
@@ -82,7 +82,7 @@ class HttpClientFactory @Inject constructor(
 
                     refreshTokens {
 
-                        val info = encryptedSessionStorage.get()
+                        val info = encryptedStorage.get("AUTH_INFO", AuthInfo.serializer())
                         val response = client.post<AccessTokenRequest, AccessTokenResponse>(
                             route = "/auth/refresh_token",
                             body = AccessTokenRequest(
@@ -97,7 +97,7 @@ class HttpClientFactory @Inject constructor(
                                 userId = info?.userId.orEmpty()
                             )
 
-                            encryptedSessionStorage.set(newAuthInfo)
+                            encryptedStorage.set("AUTH_INFO", AuthInfo.serializer(), newAuthInfo)
 
                             BearerTokens(
                                 accessToken = newAuthInfo.accessToken.orEmpty(),
