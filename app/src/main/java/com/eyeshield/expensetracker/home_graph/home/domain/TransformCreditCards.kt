@@ -7,9 +7,8 @@ class TransformCreditCards @Inject constructor() {
 
     fun getTransformedCardsForSelectedIndex(
         cardInfoList: MutableList<CardInfo>,
-        index: Int,
         selectedCard: CardInfo
-    ): CardInfo {
+    ): List<CardInfo> {
         val getCardDataForMaximumCard = cardInfoList.maxByOrNull {
             it.zIndex
         }
@@ -20,21 +19,27 @@ class TransformCreditCards @Inject constructor() {
 
         val temp = selectedCard.copy()
 
-        cardInfoList[index] =
+        val selectedCardIndex = cardInfoList.indexOfLast {
+            it == selectedCard
+        }
+
+        cardInfoList[selectedCardIndex] =
             cardInfoList[maximumItemIndex].copy(
+                id = cardInfoList[selectedCardIndex].id,
                 zIndex = cardInfoList[maximumItemIndex].zIndex,
                 offsetY = cardInfoList[maximumItemIndex].offsetY,
-                cardColor = cardInfoList[index].cardColor,
+                cardColor = cardInfoList[selectedCardIndex].cardColor,
                 position = cardInfoList[maximumItemIndex].position
             )
 
         cardInfoList[maximumItemIndex] = temp.copy(
+            id = cardInfoList[maximumItemIndex].id,
             zIndex = temp.zIndex,
             offsetY = temp.offsetY,
             cardColor = cardInfoList[maximumItemIndex].cardColor,
             position = temp.position
         )
 
-        return selectedCard
+        return cardInfoList
     }
 }

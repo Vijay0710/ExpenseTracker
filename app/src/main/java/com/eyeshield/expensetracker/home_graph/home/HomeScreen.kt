@@ -1,9 +1,11 @@
 package com.eyeshield.expensetracker.home_graph.home
 
 
-import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -43,7 +45,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -94,7 +95,9 @@ fun HomeScreen(
                     .bottomPadding(40.dp)
             ) {
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .topPadding(12.dp)
+                        .weight(1f)
                 ) {
                     Text(
                         text = "Good Morning!",
@@ -106,7 +109,8 @@ fun HomeScreen(
 
                     Text(
                         modifier = Modifier.topPadding(10.dp),
-                        text = "Vijay A", style = TextStyle(
+                        text = "Vijay A",
+                        style = TextStyle(
                             fontSize = 20.sp, color = colorResource(id = R.color.username),
                             fontFamily = FontFamily(Font(R.font.nunito_bold))
                         )
@@ -168,56 +172,51 @@ fun HomeScreen(
                         }
                 ) {
                     uiState.creditAccounts.zip(uiState.cardInfoList)
-                        .mapIndexed { index, cardPositionAndOffsetState ->
-                            key(index) {
+                        .forEachIndexed { index, (accountInfo, cardPositionAndOffsetState) ->
+                            key(accountInfo) {
                                 var cardFace by remember { mutableStateOf(CardFace.Front) }
 
-                                val zOffsetDelay = remember(index) { 100 * index }
-                                val yOffsetDelay =
-                                    remember(index) { 2 * zOffsetDelay + (100 * uiState.creditAccounts.size - 1) }
 
                                 val animateYOffset = animateDpAsState(
-                                    targetValue = cardPositionAndOffsetState.second.offsetY,
+                                    targetValue = cardPositionAndOffsetState.offsetY,
                                     label = "Y Offset Animation",
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = EaseIn,
-                                        delayMillis = yOffsetDelay
-                                    )
+                                    animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
                                 )
 
-                                val animateZIndex = animateFloatAsState(
-                                    targetValue = cardPositionAndOffsetState.second.zIndex,
-                                    label = "Z index animation",
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = EaseIn,
-                                        delayMillis = zOffsetDelay
-                                    )
+                                val animatedScale by animateFloatAsState(
+                                    targetValue = if (uiState.selectedCard.id == cardPositionAndOffsetState.id) 1.05f else 0.85f + (0.1f * cardPositionAndOffsetState.position),
+                                    animationSpec = tween(500, easing = LinearOutSlowInEasing),
+                                    label = "Card Scale Animation"
+                                )
+
+                                val animateZIndex by animateFloatAsState(
+                                    targetValue = cardPositionAndOffsetState.zIndex,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioHighBouncy,
+                                        stiffness = Spring.StiffnessMedium
+                                    ),
+                                    label = "Z index animation"
                                 )
 
                                 CreditCard(
                                     modifier = Modifier
-                                        .zIndex(animateZIndex.value)
-                                        .offset {
-                                            IntOffset(
-                                                x = 0,
-                                                y = animateYOffset.value.roundToPx()
-                                            )
+                                        .zIndex(animateZIndex)
+                                        .offset(y = animateYOffset.value)
+                                        .graphicsLayer {
+                                            scaleX = animatedScale
+                                            scaleY = animatedScale
                                         },
                                     cardContainerColor = colorResource(
-                                        cardPositionAndOffsetState.second.cardColor
+                                        cardPositionAndOffsetState.cardColor
                                     ),
                                     cardFace = cardFace,
                                     onClick = {
-                                        if (cardPositionAndOffsetState.second.position == uiState.cardInfoList.size - 1) {
+                                        if (cardPositionAndOffsetState.position == uiState.cardInfoList.size - 1) {
                                             cardFace = cardFace.next
                                         } else {
                                             uiAction(
                                                 HomeViewModel.UiAction.TransformCreditCards(
-                                                    id = cardPositionAndOffsetState.first.id,
-                                                    index = index,
-                                                    selectedCard = cardPositionAndOffsetState.second
+                                                    selectedCard = cardPositionAndOffsetState
                                                 )
                                             )
                                         }
@@ -225,7 +224,7 @@ fun HomeScreen(
                                     front = {
                                         CreditCardContent(
                                             onNavigate = onNavigate,
-                                            accountInfo = cardPositionAndOffsetState.first
+                                            accountInfo = accountInfo
                                         )
                                     },
                                     back = {
@@ -276,7 +275,11 @@ fun HomeScreen(
 }
 
 
-@Preview(showBackground = true, backgroundColor = 0xFFF6F6F6)
+@Preview(
+    device = "spec:width=1440px,height=3200px,dpi=560",
+    showBackground = true,
+    backgroundColor = 0xFFF6F6F6
+)
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(

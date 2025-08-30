@@ -37,6 +37,11 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            //TODO: Need to update this dynamically depending on the value from DB
+            updateCardInfoListAndSelectedCard(
+                uiState.value.cardInfoList,
+                uiState.value.cardInfoList[2]
+            )
             withContext(Dispatchers.IO) {
                 val accounts = creditAccountDao.getCreditAccounts()
                 withContext(Dispatchers.Main.immediate) {
@@ -64,16 +69,15 @@ class HomeViewModel @Inject constructor(
             }
 
             is UiAction.TransformCreditCards -> {
-                transformCreditCards.getTransformedCardsForSelectedIndex(
-                    cardInfoList = _uiState.value.cardInfoList,
-                    index = action.index,
+                val updatedCards = transformCreditCards.getTransformedCardsForSelectedIndex(
+                    cardInfoList = uiState.value.cardInfoList.toMutableList(),
                     selectedCard = action.selectedCard
                 )
                 // To Trigger state update in UI
                 viewModelScope.launch {
-                    updateSelectedCreditAccount(action.id)
+                    updateCardInfoListAndSelectedCard(updatedCards, action.selectedCard)
+//                    updateSelectedCreditAccount(action.selectedCard)
                 }
-                updateCardInfoListAndSelectedCard(action.selectedCard)
             }
         }
     }
@@ -81,17 +85,21 @@ class HomeViewModel @Inject constructor(
     /**
      * Updates the selected card isSelected to true in DB and other cards isSelected to False in DB
      * **/
-    private suspend fun updateSelectedCreditAccount(id: String) {
+    private suspend fun updateSelectedCreditAccount(selectedCard: CardInfo) {
+        // Needs to revamped
         withContext(Dispatchers.IO) {
-            creditAccountDao.updateSelectedCreditAccount(id)
-            creditAccountDao.updateUnSelectedCreditAccount(id)
+//            creditAccountDao.updateSelectedCreditAccount(id)
+//            creditAccountDao.updateUnSelectedCreditAccount(id)
         }
     }
 
-    private fun updateCardInfoListAndSelectedCard(selectedCard: CardInfo) {
+    private fun updateCardInfoListAndSelectedCard(
+        cardInfo: List<CardInfo>,
+        selectedCard: CardInfo
+    ) {
         _uiState.update {
             it.copy(
-                cardInfoList = _uiState.value.cardInfoList,
+                cardInfoList = cardInfo,
                 selectedCard = selectedCard.copy()
             )
         }
@@ -159,7 +167,7 @@ class HomeViewModel @Inject constructor(
                 progress = 0.6f,
                 cardLimit = "₹ 2,00,000",
                 logo = R.drawable.visa_logo,
-                creditCardOutStanding = "15000.00"
+                creditCardOutStanding = "15000.00",
             ),
             CreditAccountUIModel(
                 id = "1234",
@@ -182,7 +190,7 @@ class HomeViewModel @Inject constructor(
         val errorMessage: String = "",
         val isPullToRefreshInProgress: Boolean = false,
         val selectedCard: CardInfo = CardInfo(),
-        val cardInfoList: MutableList<CardInfo> = mutableListOf(
+        val cardInfoList: List<CardInfo> = listOf(
             CardInfo(
                 position = 0,
                 zIndex = 0f,
@@ -209,8 +217,6 @@ class HomeViewModel @Inject constructor(
 
         /** Action To Update Cards Position when user chooses a particular card **/
         data class TransformCreditCards(
-            val id: String,
-            val index: Int,
             val selectedCard: CardInfo
         ) : UiAction
     }
